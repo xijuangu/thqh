@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logdemo.lightserver.Mapper.dataMapper">
+
+<!--    每次上传truncate覆写-->
+    <delete id="truncate_data">
+        TRUNCATE TABLE data
+    </delete>
+<!--    int save(data a);-->
+    <insert id="save" parameterType="com.logdemo.lightserver.pojo.data">
+        INSERT INTO data (date, spodumene, Lg_Lepidolite, Hg_Lepidolite, LFP_Cathode, LFP_BattPower, NCM, ECSpot, CompoIndex)
+        VALUES (#{date}, #{spodumene}, #{Lg_Lepidolite}, #{Hg_Lepidolite}, #{LFP_Cathode}, #{LFP_BattPower}, #{NCM}, #{ECSpot}, #{CompoIndex})
+        ON DUPLICATE KEY UPDATE
+        spodumene = VALUES(spodumene),
+        Lg_Lepidolite = VALUES(Lg_Lepidolite),
+        Hg_Lepidolite = VALUES(Hg_Lepidolite),
+        LFP_Cathode = VALUES(LFP_Cathode),
+        LFP_BattPower = VALUES(LFP_BattPower),
+        NCM = VALUES(NCM),
+        ECSpot = VALUES(ECSpot),
+        CompoIndex = VALUES(CompoIndex)
+    </insert>
+
+</mapper>

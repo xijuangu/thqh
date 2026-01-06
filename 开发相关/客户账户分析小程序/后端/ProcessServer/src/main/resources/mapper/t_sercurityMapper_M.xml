@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_sercurityMapper_M">
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_SECURITY
+    </select>
+</mapper>

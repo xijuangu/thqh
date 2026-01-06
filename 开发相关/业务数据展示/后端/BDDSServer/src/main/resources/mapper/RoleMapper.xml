@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.RoleMapper">
+    <!--    List<role> getRolesByUserId(@Param("UserId") String UserId);-->
+    <select id="getRolesByUserId" resultType="com.org.bddsserver.pojo.role">
+        SELECT a.* FROM role a inner join sysuser_role_map b on a.id = b.role_id where b.sysuser_id = #{UserId}
+    </select>
+
+    <!--    List<role> getAllRole();-->
+    <select id="getAllRole" resultType="com.org.bddsserver.pojo.role">
+        SELECT * FROM role
+    </select>
+
+    <!--    Integer addSysUser_Role_Map(@Param("sysuserRoleMaps") List<sysuser_role_map> sysuserRoleMaps);-->
+    <insert id="addSysUser_Role_Map" parameterType="List">
+        INSERT INTO sysuser_role_map (id,sysuser_id, role_id) VALUES
+        <foreach collection="sysuserRoleMaps" item="item" separator=",">
+            (null,#{item.sysuser_id}, #{item.role_id})
+        </foreach>
+    </insert>
+
+    <!--    List<sysfunctions> getSysfunctionsByRoleId(Integer id);-->
+    <select id="getSysfunctionsByRoleId" resultType="com.org.bddsserver.pojo.sysfunctions">
+        SELECT a.*,b.function_name FROM auth_function_map a inner join sysfuntions b on a.function_code =
+        b.function_code where
+        a.role_id = #{id}
+    </select>
+
+    <!--    List<PersonnelInfo> getDataAuthInfoByRoleId(Integer id);-->
+    <select id="getDataAuthInfoByRoleId" resultType="com.org.bddsserver.dto.DataAuthInfo">
+        SELECT distinct A.*,D.department_code FROM auth_data_map A INNER JOIN personnel P ON A.personnel_code = P.personnel_code
+        LEFT JOIN department D ON P.department_code = D.department_code WHERE A.role_id = #{id}
+    </select>
+
+    <!--    List<sysfunctions> getAllSysfunctions();-->
+    <select id="getAllSysfunctions" resultType="com.org.bddsserver.pojo.sysfunctions">
+        SELECT * FROM sysfuntions
+    </select>
+
+    <!--    Integer addNewRole(role role);-->
+    <insert id="addNewRole" parameterType="com.org.bddsserver.pojo.role">
+        INSERT INTO role (role_name,role_code) VALUES (#{role_name},#{role_code})
+    </insert>
+
+    <!--    Integer updateRoleNameByRoleId(@Param("rold_id") Integer role_id, @Param("role_name") String role_name);-->
+    <update id="updateRoleNameByRoleId">
+        UPDATE role SET role_name = #{role_name} WHERE id = #{rold_id}
+    </update>
+
+
+    <!--    Integer deleteRoleAuthFuncsByRoleId(Integer role_id);-->
+    <delete id="deleteRoleAuthFuncsByRoleId">
+        DELETE FROM auth_function_map WHERE role_id = #{role_id}
+    </delete>
+    <!--    Integer updateRoleAuthFuncsByRoleId(@Param("role_id") Integer role_id,@Param("function_codes") String[] sysfunctionsCode);-->
+    <update id="updateRoleAuthFuncsByRoleId">
+
+        INSERT INTO auth_function_map (role_id, function_code)
+        VALUES
+        <foreach collection="function_codes" item="code" separator=",">
+            (#{role_id}, #{code})
+        </foreach>
+    </update>
+
+
+    <!--    Integer deleteRoleAuthDataByRoleId(Integer role_id);-->
+    <delete id="deleteRoleAuthDataByRoleId">
+        DELETE FROM auth_data_map WHERE role_id = #{role_id}
+    </delete>
+
+    <!--    Integer updateRoleAuthDataByRoleId(@Param("role_id") Integer roleId,@Param("personnel_codes") String[] personnelCode);-->
+    <update id="updateRoleAuthDataByRoleId">
+
+        INSERT INTO auth_data_map (role_id, personnel_code)
+        VALUES
+        <foreach collection="personnel_codes" item="code" separator=",">
+            (#{role_id}, #{code})
+        </foreach>
+    </update>
+
+<!--    Integer deleteRoleByRoleId(Integer id);-->
+    <delete id="deleteRoleByRoleId">
+        DELETE FROM role WHERE id = #{id}
+    </delete>
+
+
+</mapper>

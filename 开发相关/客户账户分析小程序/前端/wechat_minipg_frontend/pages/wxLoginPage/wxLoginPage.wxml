@@ -1,0 +1,80 @@
+<!--pages/wxLoginPage/wxLoginPage.wxml-->
+<view class="container">
+  <!-- 背景图形 -->
+  <view class="background-shapes">
+    <view class="shape shape-1"></view>
+    <view class="shape shape-2"></view>
+    <view class="shape shape-3"></view>
+    <view class="shape shape-4"></view>
+  </view>
+
+  
+  <view class="MainContent">
+    <view class="content">
+      <view class="companyLogo">
+        <image src="/pages/images/公司logo.png" mode="" />
+      </view>
+      <view class="conpanyName">通惠期货</view>
+    </view>
+    <view class="welcomLine">欢迎使用 账户分析平台</view>
+  </view>
+
+  <view class="loginButton">
+    <button class="login fast" bind:tap="wxlogin">微信号快捷登录</button>
+    <button class="login phone" bind:tap="phoneNumberLogin_onbClick" wx:if="{{privacyAuth == 'non-active'}}">授权手机号登录</button>
+    <button class="login phone" open-type="getPhoneNumber" bindgetphonenumber="getphonenumber" wx:if="{{privacyAuth == 'active'}}">授权手机号登录</button>
+    <!-- <button class="login phone" open-type="getPhoneNumber" bindgetphonenumber="getphonenumber" wx:if="{{privacyAuth == 'non-check'}}">授权手机号登录</button> -->
+    <view class="privacyAuth-container">
+      <checkbox checked="{{privacyAuth_isChecked}}" class="{{privacyAuth}}" bindtap="HandelPrivacyCheck" />
+      <text class="info-normal" style=" font-size: 24rpx;" bindtap="toPrivacy1Page">使用账户分析功能需授权登录小程序，阅读并同意</text>
+
+      <text class="info-bold-link" style=" color: #3e8ffe;font-size: 22rpx;" bindtap="toPrivacyPage"data-type="1">《客户账户分析小程序 隐私协议政策（完整版）》</text>
+      <text class="info-normal" style=" font-size: 24rpx;">、</text>
+
+      <text class="info-bold-link" style="color: #3e8ffe;font-size: 22rpx;" bindtap="toPrivacyPage" data-type="2">《个人信息收集清单》</text>
+      <text class="info-normal" style=" font-size: 24rpx;">、</text>
+
+      <text class="info-bold-link" style="color: #3e8ffe;font-size: 22rpx;" bindtap="toPrivacyPage" data-type="3">《个人信息第三方共享清单》</text>
+      <text class="info-normal" style=" font-size: 24rpx;">、</text>
+
+      <text class="info-bold-link" style=" color: #3e8ffe;font-size: 22rpx;" bindtap="toPrivacyPage" data-type="4">《登录政策》</text>
+
+    </view>
+
+
+  </view>
+
+
+  <!---------------------------------------------------------------------->
+  <view class="mask" wx:if="{{Show == 1}}" animation="{{maskAnimation}}">
+  </view>
+
+  <view class="bottomPop" wx:if="{{Show == 1}}" animation="{{bottomPopAnimation}}">
+    <view class="topContent">
+      <view class="title">
+        申请获取您的头像、昵称
+      </view>
+      <view class="tip">
+        仅用于资料展示
+      </view>
+    </view>
+    <view class="pattern2 getProfile">
+      <view class="pattern1 pic">
+        <image class="avatar" src="{{avatarUrl}}"></image>
+      </view>
+      <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">点击获取头像</button>
+    </view>
+    <view class="pattern2 getName">
+      <view class="pattern1 name">
+        <text>昵称</text>
+      </view>
+
+      <input type="nickname" adjust-position="{{false}}" class="weui-input" bindinput="getInputValue" placeholder="请输入昵称" />
+    </view>
+    <view class="operationBtn">
+      <view class="btn close" bind:tap="closeBottomPop">关闭</view>
+      <view class="btn submit {{disable}}" bind:tap="submit">提交</view>
+      <!--  -->
+    </view>
+  </view>
+</view>

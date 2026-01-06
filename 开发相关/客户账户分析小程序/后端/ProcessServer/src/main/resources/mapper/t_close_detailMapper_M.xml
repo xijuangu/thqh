@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_close_detailMapper_M">
+    <!--    t_client_sett getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_close_detail">
+        select * from T_CLOSE_DETAIL where id = #{id}
+    </select>
+    <!--    List<t_close_detail> getAll(@Param("id1")int id1,@Param("id2")int id2);-->
+    <select id="getAll" resultType="org.example.processserver.pojo.t_close_detail">
+        select * from T_CLOSE_DETAIL where id in (SELECT id FROM (SELECT id FROM T_CLOSE_DETAIL where id BETWEEN #{id1}
+        and #{id2}) AS temp)
+    </select>
+    <!--    List<t_close_detail> getIncrement(@Param("startDate")String startDate,@Param("endDate")String endDate);-->
+    <select id="getIncrement" resultType="org.example.processserver.pojo.t_close_detail">
+        select * from T_CLOSE_DETAIL where busi_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+
+    <!--    int delete_TCD_encrypt_temp();-->
+    <delete id="delete_TCD_encrypt_temp">
+        TRUNCATE TCD_encrypt_temp
+    </delete>
+
+    <!--    List<encrypt_field> TCD_getDistinct();-->
+    <select id="TCD_getDistinct" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT fund_account_id,trade_account_id,client_id from T_CLOSE_DETAIL where encrypt_lable = 0
+    </select>
+
+    <!--    int insertInto_TCD_encrypt_temp(@Param("TCD_B_fundaccountId")String TCD_B_fundaccountId,-->
+    <!--    @Param("TCD_A_fundaccountId")String TCD_A_fundaccountId,-->
+    <!--    @Param("TCD_B_tradeaccountId")String TCD_B_tradeaccountId,-->
+    <!--    @Param("TCD_A_tradeaccountId")String TCD_A_tradeaccountId,-->
+    <!--    @Param("TCD_B_clientId")String TCD_B_clientId,-->
+    <!--    @Param("TCD_A_clientId")String TCD_A_clientId);-->
+    <insert id="insertInto_TCD_encrypt_temp">
+        insert into
+        TCD_encrypt_temp(TCD_B_fundaccountId,TCD_A_fundaccountId,TCD_B_tradeaccountId,TCD_A_tradeaccountId,TCD_B_clientId,TCD_A_clientId)
+        values(#{TCD_B_fundaccountId},#{TCD_A_fundaccountId},#{TCD_B_tradeaccountId},#{TCD_A_tradeaccountId},#{TCD_B_clientId},#{TCD_A_clientId})
+    </insert>
+
+
+    <!--    Long getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_CLOSE_DETAIL
+    </select>
+
+    <!--    int Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_CLOSE_DETAIL where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_CLOSE_DETAIL A INNER JOIN TCD_encrypt_temp B ON A.fund_account_id = B.TCD_B_fundaccountId and
+        A.trade_account_id = B.TCD_B_tradeaccountId and A.client_id = B.TCD_B_clientId SET A.fund_account_id =
+        B.TCD_A_fundaccountId,A.trade_account_id=B.TCD_A_tradeaccountId,A.client_id=B.TCD_A_clientId,A.encrypt_lable=1
+        WHERE A.encrypt_lable=0 and A.id IN (SELECT id FROM (SELECT id FROM T_CLOSE_DETAIL where id BETWEEN #{id1} and
+        #{id2}) AS temp);
+    </update>
+
+    <!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_CLOSE_DETAIL A inner join TCD_encrypt_temp B ON A.fund_account_id = B.TCD_B_fundaccountId and
+        A.trade_account_id = B.TCD_B_tradeaccountId and A.client_id = B.TCD_B_clientId SET A.fund_account_id =
+        B.TCD_A_fundaccountId,A.trade_account_id=B.TCD_A_tradeaccountId,A.client_id=B.TCD_A_clientId,A.encrypt_lable=1
+        where A.id in (select id from (select id from T_CLOSE_DETAIL where encrypt_lable=0) AS temp)
+    </update>
+
+
+</mapper>

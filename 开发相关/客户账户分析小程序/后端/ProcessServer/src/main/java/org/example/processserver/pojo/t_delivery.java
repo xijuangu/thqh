@@ -1,0 +1,71 @@
+package org.example.processserver.pojo;
+
+import lombok.Data;
+import org.springframework.stereotype.Component;
+
+@Data
+@Component
+public class t_delivery {
+    private String busi_date;
+    private String client_id;
+    private String security_id;
+    private String trade_type;
+    private String market_id;
+    private String fund_account_id;
+    private String trade_account_id;
+    private Double delivery_amount;
+    private Double delivery_price;
+    private Double undelivery_amount;
+    private Double hand_amount;
+    private Double pay_amount;
+    private String brand_code;
+    private String warehouse;
+    private Double premium_rate;
+    private Double premium;
+    private String remark;
+    private Double transfee;
+    private Double market_transfee;
+    private Double cost;
+    private Double forzen_amount;
+    private Double delivery_profit_bydate;
+    private Double delivery_profit_bytrade;
+    private Double margin;
+    private Double market_margin;
+    private String expire_date;
+    private String delivery_type;
+    private String sett_date;
+    private String delivery_date;
+    private String brokers_id;
+    private String trade_prop;
+    private String money_type;
+    private String ds_date;
+    private String data_source;
+    private String branch_id;
+    private String bs_direction;
+    private Double deliv_no;
+    private String seat_no;
+    private Double done_amt;
+    private Double remain_amt;
+    private Double settle_price;
+    private Double settle_amt;
+    private Double other_fee;
+    private Double act_amt;
+    private String invoice_no;
+    private Double commi_amt;
+    private Double commi_rate;
+    private Double remain_rate;
+    private Double margin_price;
+    private Double exch_commi_amt;
+    private Double exch_commi_rate;
+    private Double frz_margin;
+    private Double frz_exch_margin;
+    private String security_code;
+    private Double exch_rate_1t;
+    private Double exch_rate;
+    private String option_type;
+    private String client_no;
+    private String product_id;
+    private String settlement_date;
+    private Integer id;
+    private Integer encrypt_lable;
+}

@@ -1,0 +1,7 @@
+{
+    "navigationBarTitleText":"Demo",
+    "component": true,
+    "usingComponents":{
+      "second" : "/components/topNev/topNev"
+    }
+}

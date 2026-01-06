@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.ads_faaMapper">
+<!--    int insertList_ads_faa(List<ads_faa> ads_faa_list);-->
+    <insert id="insertList_ads_faa">
+        insert into ads_futures_account_analysis values
+        <foreach collection="ads_faa_list" item="ads" separator=",">
+            (#{ads.client_id}, #{ads.period}, #{ads.begin_busi_date}, #{ads.end_busi_date}, #{ads.busi_date}, #{ads.today_net_value}, #{ads.cumulative_net_value}, #{ads.risk_level}, #{ads.dyn_end_rights}, #{ads.cumulative_gain_rate}, #{ads.drawdown_rate},#{ads.trade_day_flag})
+        </foreach>
+    </insert>
+
+<!--    void truncate_ads_faa();-->
+    <delete id="truncate_ads_faa">
+            truncate table ads_futures_account_analysis
+    </delete>
+</mapper>

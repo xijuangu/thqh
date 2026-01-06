@@ -1,0 +1,19 @@
+<!--components/second.wxml-->
+<view class="container">
+  <view class="mask" animation="{{animation_ScreenMaskOn}}" wx:if="{{animation_screenMaskON_show == 'show'}}"></view>
+
+  <view class="statusBar {{show_background_color}}" style="height: {{statusBarHeight}}px;"></view>
+  <view class="nevigationbar {{show_background_color}}" style="height: {{capsuleHeight+(capsuleTop-statusBarHeight)*2}}px;">
+    <view class="iconbox" wx:if="{{barOperation==1 || barOperation==2 || barOperation==3}}" bind:tap="barOperation1">
+      <image class="arrowIcon" src="/components/statusBarIcon/退出箭头.png"></image>
+    </view>
+
+    <text class="barTitle">{{title}}</text>
+  </view>
+  <view class="privacyAuth" wx:if="{{privacyAuthShow=='show'}}">
+    {{privacyAuthInfo}}
+    <button class="btn" bind:tap="cancelPrivacyAuth">撤回授权</button>
+  </view>
+
+
+</view>

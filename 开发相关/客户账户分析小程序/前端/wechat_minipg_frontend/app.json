@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/wxLoginPage/wxLoginPage",
+    "pages/tradeLoginPage/tadeLoginPage",
+    "pages/userPage/userPage",
+    "pages/functionPage/demo",
+    "pages/logs/logs",
+    "pages/otterLink/outterLink",
+    "pages/privacyPage/privacyPage",
+    "pages/appPrivacyPolicyPage/appPrivacyPolicyPage",
+    "pages/UserInfoColletListPage/UserInfoColletListPage",
+    "pages/loginPolicyPage/loginPolicyPage",
+    "pages/userInfoThirdPartyPolicyPage/userInfoThirdPartyPolicyPage"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarBackgroundColor": "#E8E8E8",
+    "navigationStyle": "custom"
+  },
+  "stylev2": {
+    "navigationBarTextStyle": "black"
+  },
+  "lazyCodeLoading": "requiredComponents"
+}

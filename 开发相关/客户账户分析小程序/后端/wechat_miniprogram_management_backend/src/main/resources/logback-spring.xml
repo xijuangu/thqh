@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+
+    <!-- 定义日志格式 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 普通日志文件路径 -->
+    <property name="NORMAL_LOG_FILE" value="logs/application.log"/>
+
+    <!-- 错误日志文件路径 -->
+    <property name="ERROR_LOG_FILE" value="logs/error.log"/>
+
+    <!-- 普通日志的 RollingFileAppender -->
+    <appender name="NORMAL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${NORMAL_LOG_FILE}</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 每天生成一个新的压缩日志文件，并且每个文件大小限制为100MB -->
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>  <!-- 这里加上了 %i -->
+            <!-- 保留60天的日志文件，避免占用过多磁盘空间 -->
+            <maxHistory>60</maxHistory>
+            <!-- 设置文件的最大大小，防止日志文件过大 -->
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 错误日志的 RollingFileAppender -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ERROR_LOG_FILE}</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 仅记录 ERROR 及以上级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 每天生成一个新的压缩错误日志文件 -->
+            <fileNamePattern>logs/error.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>  <!-- 这里加上了 %i -->
+            <!-- 保留60天的日志文件 -->
+            <maxHistory>60</maxHistory>
+            <!-- 设置文件的最大大小 -->
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异步普通日志 -->
+    <appender name="ASYNC_NORMAL" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="NORMAL_FILE"/>
+    </appender>
+
+    <!-- 异步错误日志 -->
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="ERROR_FILE"/>
+    </appender>
+
+    <!-- 控制台输出（生产环境中通常不需要，可以注释或移除） -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根日志记录器 -->
+    <root level="INFO">
+        <!-- 注释掉控制台日志输出，以避免生产环境中的控制台信息过多 -->
+         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ASYNC_NORMAL"/>
+        <appender-ref ref="ASYNC_ERROR"/>
+    </root>
+
+
+    <!-- 为 MyBatis 设置日志级别 -->
+    <logger name="org.apache.ibatis" level="INFO" />
+    <logger name="org.mybatis.spring" level="INFO" />
+    <!-- 为你的 Mapper 包设置日志级别 -->
+    <logger name="com.thqh.wechat_miniprogram_backend.mapper" level="INFO" />
+    <!-- 数据源日志级别 -->
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+
+</configuration>

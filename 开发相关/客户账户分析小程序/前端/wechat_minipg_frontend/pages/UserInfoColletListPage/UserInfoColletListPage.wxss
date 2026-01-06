@@ -1,0 +1,15 @@
+/* pages/UserInfoColletListPage/UserInfoColletListPage.wxss */
+.policy-container .policy {
+  margin-bottom: 35rpx;
+} 
+.policy-container .policy .title{
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 10px;
+} 
+.info {
+  font-size: 26rpx;
+}
+.content {
+  font-size: 26rpx;
+}

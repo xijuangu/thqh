@@ -1,0 +1,32 @@
+{
+  "compileType": "miniprogram",
+  "libVersion": "trial",
+  "setting": {
+    "coverView": true,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
+    "showShadowRootInWxmlPanel": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "ignoreUploadUnusedFiles": true
+  },
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "auto",
+    "tabSize": 2
+  },
+  "simulatorPluginLibVersion": {
+    "qywx_simulator_plugin": "2.20.3"
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "appid": "wxcb4022dab16265ae"
+}

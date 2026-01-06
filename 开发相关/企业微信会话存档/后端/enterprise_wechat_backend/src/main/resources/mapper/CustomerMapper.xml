@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.CustomerMapper">
+    <!-- 结果映射 -->
+    <resultMap id="CustomerResultMap" type="com.thqh.enterprise_wechat_backend.entity.Customer">
+        <id property="id" column="id"/>
+        <result property="externalUserId" column="external_userid"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="avatar" column="avatar"/>
+        <result property="corpName" column="corp_name"/>
+        <result property="corpFullName" column="corp_full_name"/>
+        <result property="gender" column="gender"/>
+        <result property="position" column="position"/>
+        <result property="unionid" column="unionid"/>
+        <result property="followUserid" column="follow_userid"/>
+        <result property="followRemark" column="follow_remark"/>
+        <result property="followDescription" column="follow_description"/>
+        <result property="followCreatetime" column="follow_createtime"/>
+        <result property="followTagIds" column="follow_tag_ids"/>
+        <result property="followRemarkMobiles" column="follow_remark_mobiles"/>
+        <result property="followOperUserid" column="follow_oper_userid"/>
+        <result property="followAddWay" column="follow_add_way"/>
+        <result property="status" column="status"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 批量插入 raw_customer 表 -->
+    <insert id="batchInsertRawCustomers" parameterType="java.util.List">
+        INSERT INTO raw_customer
+        (external_userid, name, position, avatar, corp_name, corp_full_name, type, gender, unionid,
+        follow_userid, follow_remark, follow_description, follow_createtime, follow_tag_ids, follow_remark_mobiles, follow_oper_userid, follow_add_way)
+        VALUES
+        <foreach collection="list" item="customer" separator=",">
+            (#{customer.externalUserId}, #{customer.name}, #{customer.position}, #{customer.avatar}, #{customer.corpName},
+            #{customer.corpFullName}, #{customer.type}, #{customer.gender}, #{customer.unionid}, #{customer.followUserid},
+            #{customer.followRemark}, #{customer.followDescription}, #{customer.followCreatetime}, #{customer.followTagIds},
+             #{customer.followRemarkMobiles},#{customer.followOperUserid}, #{customer.followAddWay})
+        </foreach>
+    </insert>
+
+
+    <!-- 合并 raw_customer 数据到正式表 customer，并更新状态 -->
+    <update id="mergeRawToCustomer">
+        <!-- 1. 合并：将今天 raw_customer 中的数据插入到正式表 customer，
+             如果存在 (external_userid) 则更新对应字段，并将 status 置为 0 -->
+        INSERT INTO customer (external_userid, name, position, avatar, corp_name, corp_full_name, type, gender, unionid, status)
+        SELECT external_userid, name, position, avatar, corp_name, corp_full_name, type, gender, unionid, 0
+        FROM raw_customer
+        WHERE DATE(created_at) = CURDATE()
+        ON DUPLICATE KEY UPDATE
+        name = VALUES(name),
+        position = VALUES(position),
+        avatar = VALUES(avatar),
+        corp_name = VALUES(corp_name),
+        corp_full_name = VALUES(corp_full_name),
+        type = VALUES(type),
+        gender = VALUES(gender),
+        unionid = VALUES(unionid),
+        updated_at = NOW(),
+        status = 0;
+    </update>
+
+
+    <!-- 合并 raw_customer 数据到正式表 customer_follow，并更新状态 -->
+    <update id="mergeRawToCustomerFollow">
+        <!-- 1. 合并：将今天 raw_customer 中的数据插入到正式表 customer_follow，
+             如果存在 (external_userid,follow_userid) 则更新对应字段，并将 status 置为 0 -->
+        INSERT INTO customer_follow (external_userid,follow_userid, follow_remark, follow_description, follow_createtime, follow_tag_ids,follow_remark_mobiles, follow_oper_userid, follow_add_way, status)
+        SELECT external_userid,follow_userid, follow_remark, follow_description, follow_createtime, follow_tag_ids,follow_remark_mobiles, follow_oper_userid, follow_add_way, 0
+        FROM raw_customer
+        WHERE DATE(created_at) = CURDATE()
+        ON DUPLICATE KEY UPDATE
+        follow_remark = VALUES(follow_remark),
+        follow_description = VALUES(follow_description),
+        follow_createtime = VALUES(follow_createtime),
+        follow_tag_ids = VALUES(follow_tag_ids),
+        follow_tag_ids = VALUES(follow_remark_mobiles),
+        follow_oper_userid = VALUES(follow_oper_userid),
+        follow_add_way = VALUES(follow_add_way),
+        updated_at = NOW(),
+        status = 0;
+    </update>
+
+
+    <select id="getCustomersByPage" resultMap="CustomerResultMap">
+        SELECT  distinct a.id, a.external_userid, a.name, a.corp_name, a.corp_full_name , a.type, a.gender,avatar,b.follow_remark
+        FROM customer a
+        JOIN customer_follow b ON a.external_userid = b.external_userid
+        <where>
+            <if test="name != null and name != ''">
+                AND b.follow_remark LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 更新 customer 表的 status 为 1 -->
+    <update id="updateCustomerStatusToInactive">
+        UPDATE customer
+        SET status = 1;
+    </update>
+
+    <!-- 更新 customer_follow 表的 status 为 1 -->
+    <update id="updateCustomerFollowStatusToInactive">
+        UPDATE customer_follow
+        SET status = 1;
+    </update>
+
+<!--    Customer selectByUserId(String fromUserId);-->
+    <select id="selectByUserId" resultMap="CustomerResultMap">
+        select * from customer where external_userid = #{fromUserId}
+    </select>
+
+
+</mapper>

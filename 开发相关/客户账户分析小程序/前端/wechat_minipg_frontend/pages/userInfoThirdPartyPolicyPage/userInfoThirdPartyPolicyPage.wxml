@@ -1,0 +1,180 @@
+<!--pages/userInfoThirdPartyPolicyPage/userInfoThirdPartyPolicyPage.wxml-->
+<!--pages/loginPolicyPage/loginPolicyPage.wxml-->
+<topNev title="第三方信息共享清单" barOperation="{{barOperation}}" privacyAuthInfo="" privacyAuthShow="{{privacyAuthShow}}" show_background_color="show_background_color" style="position: fixed;z-index: 90;"></topNev>
+
+
+<view class="policy-container" style="position: absolute; z-index: 80; margin-top: 180rpx;padding: 10px; ">
+  <view class="mainTitle" style="width: 100%; height: 100rpx;  display: flex; align-items: center;justify-content: center;font-size: 36rpx; font-weight: 800;">
+    <text>第三方信息共享清单</text>
+  </view>
+  <view class="info" style=" margin-bottom: 10rpx ;">
+    <text>为了向您提供更完善、优质的产品和服务，我们的某些服务将由第三方提供，我们会接入由第三方提供的相关软件开发包（SDK）、开发组件实现该目的：
+    </text>
+  </view>
+  <view class="info" style=" margin-bottom: 10rpx ; margin-bottom: 50rpx;">
+    <text>我们会对第三方SDK进行严格的安全检测，在满足新的服务需求及业务功能变更时，我们会调整我们接入的第三方SDK，并及时在本说明中向您公开说明接入第三方SDK的最新情况。请注意，第三方SDK可能因版本升级、策略调整等原因导致数据类型存在一些变化，附其官方网站链接或相关隐私政策说明供参考，具体以其公示的官方说明为准。
+    </text>
+  </view>
+
+  <view text-align="justify" style="text-indent: 0.29in; margin-bottom: 0in;">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">1) 微信手机号快速验证组件</text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="margin-left: 0.53in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">组件类型：微信小程序内置用户身份验证组件
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">使用目的：通过组件获取用户授权的手机号验证凭证（code），后端通过调用微信phonenumber.getPhoneNumber接口换取用户手机号，实现快速登录及身份验证
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">涉及个人信息：</text>
+      <text style="font-size: 26rpx;font-weight:600">用户手机号（通过 code 间接获取）、临时验证凭证（code）
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">获取权限：需要用户授权同意获取手机号
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">系统：微信小程序环境
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">第三方名称：腾讯科技（深圳）有限公司
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">联系网址：</text>
+      <text style="font-size: 26rpx;font-weight:400;text-decoration:underline;color: blue;" bind:tap="link0">https://kf.qq.com/
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">隐私政策：小程序用户隐私保护指引
+
+      </text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="text-indent: 0.29in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">2) 微信头像、昵称获取组件</text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="margin-left: 0.53in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">组件类型：微信小程序内置用户基础信息获取组件
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">使用目的：拉取用户在微信侧已设置的头像与昵称，用作小程序首页及个人中心展示
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">涉及个人信息：</text>
+      <text style="font-size: 26rpx;font-weight:600">用户微信头像（URL）、微信昵称
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">获取权限：需要用户授权同意获取微信头像昵称
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">系统：微信小程序环境
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">第三方名称：腾讯科技（深圳）有限公司
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">联系网址：</text>
+
+      <text style="font-size: 26rpx;font-weight:400;text-decoration:underline;color: blue;" bind:tap="link0">https://kf.qq.com/
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">隐私政策：小程序用户隐私保护指引
+
+      </text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="text-indent: 0.29in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">3) 金仕达SDK</text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="margin-left: 0.53in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">使用场景：用户在微信小程序前台输入用户交易账号和密码（加密处理与传输）进行交易登录时，后台会调用金仕达网关接口完成用户身份验证。登录完成后，系统将按照监管要求采集并上报必要的终端信息，用于合规留痕与安全审计
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">使用目的：验证用户身份，保障账户安全。满足监管机构的监管合规要求
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">涉及个人信息：</text>
+
+    </text>
+    <text style="font-size: 26rpx;font-weight:600">用户交易账号和密码（仅用于身份验证，不会保存明文）、客户端登录IP地址；终端标识、终极标识、移动端IP、设备Mac地址、操作系统版本、设备名等
+
+    </text>
+
+    <text style="font-size: 26rpx;font-weight:400">获取权限：无
+    
+    </text>
+
+    <text style="font-size: 26rpx;font-weight:400">系统：iOS+Android
+
+    </text>
+    <text style="font-size: 26rpx;font-weight:400">数据共享与披露：用户登录验证、数据采集上报等由金仕达SDK提供的接口实现，我们仅负责调用，不会另做他用，除符合法律法规及监管机构要求外，我们不会将您的个人信息提供给未经授权的第三方。
+
+    </text>
+    <text style="font-size: 26rpx;font-weight:400">所属机构：上海金仕达软件科技股份有限公司
+
+    </text>
+    <text style="font-size: 26rpx;font-weight:400">联系方式：ks.futures.req@kingstartech.com
+
+    </text>
+    <text style="font-size: 26rpx;font-weight:400;">相关隐私政策：</text>
+    <text style="font-size: 26rpx;font-weight:400;text-decoration:underline;color: blue;" bind:tap="link1">金仕达穿透式隐私政策
+
+    </text>
+
+  </view>
+
+  <view text-align="justify" style="text-indent: 0.29in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">4) 微信小程序 Webview 组件</text>
+    </text>
+  </view>
+
+  <view text-align="justify" style="margin-left: 0.53in; margin-bottom: 0in">
+    <text color="#000000">
+      <text style="font-size: 26rpx;font-weight:400">组件类型：微信小程序内置网页容器组件
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">使用目的：在小程序内加载并展示指定的第三方网页内容，扩展小程序功能场景
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">涉及个人信息：</text>
+      <text style="font-size: 26rpx;font-weight:600">为验证报表访问权限，会通过请求链接向后端服务器传递您的登录状态标识（jwt_token权限凭证，非明文账号信息）；微信小程序运行环境自动提供的基础信息（如设备型号、操作系统版本、网络类型、微信客户端版本），用于确保网页正常加载；您在报表页面内的操作记录（如页面停留时间、点击的报表选项），仅用于网页功能正常运行，不额外收集其他信息。
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">获取权限：无需用户手动授权，仅基于微信小程序基础运行环境获取必要信息
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">系统：微信小程序环境
+
+      </text>
+
+      <text style="font-size: 26rpx;font-weight:400">第三方名称：腾讯科技（深圳）有限公司
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">联系网址：</text>
+      <text style="font-size: 26rpx;font-weight:400;text-decoration:underline;color: blue;" bind:tap="link0">https://kf.qq.com/
+
+      </text>
+      <text style="font-size: 26rpx;font-weight:400">隐私政策：小程序用户隐私保护指引
+
+      </text>
+    </text>
+  </view>
+</view>

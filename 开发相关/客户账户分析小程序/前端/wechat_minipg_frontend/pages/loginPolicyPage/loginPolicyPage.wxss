@@ -1,0 +1,4 @@
+/* pages/loginPolicyPage/loginPolicyPage.wxss */
+.content{
+  font-size: 26rpx;
+}

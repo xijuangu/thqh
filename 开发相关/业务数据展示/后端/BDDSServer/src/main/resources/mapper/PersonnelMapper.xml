@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.PersonnelMapper">
+    <!--    List<PersonnelInfo> getAllPersonnelDetail(@Param("personnel_code") String personnel_code);-->
+    <select id="getAllPersonnelDetail" resultType="com.org.bddsserver.dto.PersonnelInfo">
+        SELECT A.id id,A.personnel_code personnel_code,A.personnel_name personnel_name,A.department_code
+        department_code,B.department_name department_name
+        FROM personnel A
+        LEFT JOIN department B ON A.department_code = B.department_code
+    </select>
+
+    <!--    List<PersonnelInfo> getPersonnelDetailBySysUserId(@Param("sysUserId") Integer sysUserId);-->
+    <select id="getPersonnelDetailBySysUserId" resultType="com.org.bddsserver.dto.PersonnelInfo">
+        SELECT A.id id,A.personnel_code personnel_code,A.personnel_name personnel_name,A.department_code
+        department_code,B.department_name department_name
+        FROM sysuser S
+        LEFT JOIN sysuser_role_map SRM on S.id = SRM.sysuser_id
+        LEFT JOIN auth_data_map ADM on SRM.role_id = ADM.role_id
+        LEFT JOIN personnel A ON ADM.personnel_code = A.personnel_code
+        LEFT JOIN department B ON A.department_code = B.department_code
+        WHERE S.id = #{sysUserId}
+    </select>
+
+    <!--    List<ClientClassInfo> queryClientCodeByPersonnelCode(@Param("personnelCode") String personnelCode);-->
+    <!--    String[] queryClientCodeByPersonnelCode(@Param("personnelCode") String personnelCode);-->
+    <!--    <select id="queryClientCodeByPersonnelCode" resultType="String">-->
+    <!--        select cast(sub_code as char) as clientCode from client_class_info WHERE personnel_code =-->
+    <!--        #{personnelCode}-->
+    <!--    </select>-->
+    <select id="queryClientCodeByPersonnelCode" resultType="com.org.bddsserver.pojo.ClientClassInfo">
+        select cast(class_code as char) as class_code,cast(sub_code as char) as sub_code from client_class_info WHERE
+        personnel_code =
+        #{personnelCode}
+    </select>
+
+    <!--        String[] queryClientIdListByClinetCodeList_active(@Param("clinetCodeList") String[] clinetCodeList,@Param("client_type")String clientType,@Param("endDate")String endDate);-->
+    <!--    <select id="queryClientIdListByClinetCodeList_active" resultType="String">-->
+    <!--        select DISTINCT CLIENT_ID as clientId from T_CLIENT where SUB_CODE IN-->
+    <!--        <foreach collection="clinetCodeList" item="clientCode" open="(" separator="," close=")">-->
+    <!--            #{clientCode}-->
+    <!--        </foreach>-->
+    <!--        AND CLIENT_TYPE = #{client_type}-->
+    <!--        &lt;!&ndash;        AND ISACTIVE != '3'&ndash;&gt;-->
+    <!--        AND CASE-->
+    <!--        WHEN ISACTIVE = 3 THEN-->
+    <!--        OPEN_DATE &lt;= #{endDate} AND CLOSE_DATE &gt; #{endDate}-->
+    <!--        ELSE-->
+    <!--        OPEN_DATE &lt;= #{endDate}-->
+    <!--        END = 1-->
+    <!--    </select>-->
+
+    <!--    String[] queryClientIdListByClinetCodeList_active(@Param("clinetCodeList") List<ClientClassInfo> clinetCodeList,@Param("client_type")String clientType,@Param("endDate")String endDate);-->
+    <select id="queryClientIdListByClinetCodeList_active" resultType="String">
+        select DISTINCT CLIENT_ID as clientId from T_CLIENT where
+        <foreach collection="clinetCodeList" item="codeObj" separator="OR" open="(" close=")">
+            <!-- 根据class_code计算需要截取的位置 -->
+            <!-- MySQL的SUBSTRING函数：SUBSTRING(str, pos, len) -->
+            <!-- pos是从1开始的，所以计算方式为：2 * class_code - 1 -->
+            SUBSTRING(CLIENT_CLASS, (2 * #{codeObj.class_code} - 1), 2) = #{codeObj.sub_code}
+        </foreach>
+        AND CLIENT_TYPE = #{client_type}
+        <!--        AND ISACTIVE != '3'-->
+        AND CASE
+        WHEN ISACTIVE = 3 THEN
+        OPEN_DATE &lt;= #{endDate} AND CLOSE_DATE &gt; #{endDate}
+        ELSE
+        OPEN_DATE &lt;= #{endDate}
+        END = 1
+    </select>
+
+    <!--    String[] queryClientIdListByClinetCodeList_all(@Param("clinetCodeList") String[] clinetCodeList,@Param("client_type")String clientType);-->
+    <!--    <select id="queryClientIdListByClinetCodeList_all" resultType="String">-->
+    <!--        select DISTINCT CLIENT_ID as clientId from T_CLIENT where SUB_CODE IN-->
+    <!--        <foreach collection="clinetCodeList" item="clientCode" open="(" separator="," close=")">-->
+    <!--            #{clientCode}-->
+    <!--        </foreach>-->
+    <!--        AND CLIENT_TYPE = #{client_type}-->
+    <!--    </select>-->
+
+    <!--    String[] queryClientIdListByClinetCodeList_all(@Param("clinetCodeList") List<ClientClassInfo> clinetCodeList,@Param("client_type")String clientType);-->
+    <select id="queryClientIdListByClinetCodeList_all" resultType="String">
+        select DISTINCT CLIENT_ID as clientId from T_CLIENT where
+        <foreach collection="clinetCodeList" item="codeObj" separator="OR" open="(" close=")">
+            <!-- 根据class_code计算需要截取的位置 -->
+            <!-- MySQL的SUBSTRING函数：SUBSTRING(str, pos, len) -->
+            <!-- pos是从1开始的，所以计算方式为：2 * class_code - 1 -->
+            SUBSTRING(CLIENT_CLASS, (2 * #{codeObj.class_code} - 1), 2) = #{codeObj.sub_code}
+        </foreach>
+        AND CLIENT_TYPE = #{client_type}
+    </select>
+
+    <!--    List<PersonnelInfo> getBusinessPersonInfo();-->
+    <select id="getBusinessPersonInfo" resultType="com.org.bddsserver.dto.PersonnelInfo">
+        select a.*,b.department_name from personnel a LEFT JOIN department b on a.department_code = b.department_code
+    </select>
+
+    <!--        Integer updateBusinessPersonInfo(@Param("personnelInfo") PersonnelInfo personnelInfo);  -->
+    <update id="updateBusinessPersonInfo">
+        update personnel
+        set
+        personnel_name = #{personnelInfo.personnel_name},
+        personnel_code = #{personnelInfo.personnel_code},
+        department_code =
+        CASE
+        WHEN #{personnelInfo.department_code} = 'none' THEN NULL
+        WHEN #{personnelInfo.department_code} = '' THEN NULL
+        ELSE #{personnelInfo.department_code}
+        END
+        where id = #{personnelInfo.id}
+    </update>
+
+    <!--    Integer deleteBusinessPersonInfo(Integer id);-->
+    <delete id="deleteBusinessPersonInfo">
+        delete from personnel where id = #{id}
+    </delete>
+
+    <!--    PersonnelInfo personnelName_dupilcateCheck(@Param("personnelInfo") PersonnelInfo personnelInfo);-->
+    <select id="personnelName_dupilcateCheck" resultType="com.org.bddsserver.dto.PersonnelInfo">
+        select * from personnel where personnel_name = #{personnelInfo.personnel_name}
+    </select>
+
+    <!--    PersonnelInfo personnelCode_dupilcateCheck(@Param("personnelInfo") PersonnelInfo personnelInfo);-->
+    <select id="personnelCode_dupilcateCheck" resultType="com.org.bddsserver.dto.PersonnelInfo">
+        select * from personnel where personnel_code = #{personnelInfo.personnel_code}
+    </select>
+
+    <!--    Integer insertBusinessPersonInfo(@Param("personnelInfo") PersonnelInfo personnelInfo);-->
+    <insert id="insertBusinessPersonInfo">
+        insert into personnel(personnel_name,personnel_code,department_code)
+        values(#{personnelInfo.personnel_name},#{personnelInfo.personnel_code},
+        CASE
+        WHEN #{personnelInfo.department_code} = 'none' THEN NULL
+        WHEN #{personnelInfo.department_code} = '' THEN NULL
+        ELSE #{personnelInfo.department_code}
+        END)
+    </insert>
+
+    <!--    List<personnel> selectAllPersonnel();-->
+    <select id="selectAllPersonnel" resultType="com.org.bddsserver.pojo.personnel">
+        select * from personnel
+    </select>
+
+
+</mapper>

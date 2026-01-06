@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.ChatMessageMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ChatMessageResultMap" type="com.thqh.enterprise_wechat_backend.entity.ChatMessage">
+        <id property="id" column="id"/>
+        <result property="msgid" column="msgid"/>
+        <result property="action" column="action"/>
+        <result property="fromUser" column="from_user"/>
+        <result property="toList" column="tolist"/>
+        <result property="roomid" column="roomid"/>
+        <result property="msgTime" column="msgtime"/>
+        <result property="msgType" column="msgtype"/>
+        <result property="chatMsg" column="chat_msg"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <!-- 获取所有ChatMessage记录 -->
+    <select id="getAllChatMessages" resultMap="ChatMessageResultMap">
+        SELECT *
+        FROM chat_message
+    </select>
+
+
+    <!-- 查询员工对话列表 -->
+    <select id="findEmployeeConversations"
+            resultMap="com.thqh.enterprise_wechat_backend.mapper.WechatUserMapper.WechatUserResultMap">
+        SELECT distinct wu.*
+        FROM chat_message cm
+        JOIN chat_message_user cmu ON cm.msgid = cmu.msgid
+        JOIN wechat_user wu ON cmu.to_user = wu.userid
+        <where>
+            (cm.roomid is null or length(trim(cm.roomid)) = 0) and cmu.from_user = #{id} AND cmu.to_user = wu.userid
+            <if test="searchName!= null and searchName!= ''">
+                AND wu.name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findEmployeeConversations_hasConversation"
+            resultMap="com.thqh.enterprise_wechat_backend.mapper.WechatUserMapper.WechatUserResultMap">
+        SELECT distinct wu.*
+        FROM wechat_user wu
+        <where>
+            <if test="searchName!= null and searchName!= ''">
+                AND wu.name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询客户对话列表 -->
+    <select id="findCustomerConversations"
+            resultMap="com.thqh.enterprise_wechat_backend.mapper.CustomerMapper.CustomerResultMap">
+        SELECT distinct c.*,cf.follow_remark
+        FROM customer c
+        JOIN customer_follow cf ON c.external_userid=cf.external_userid
+        <where>
+            cf.follow_userid = #{id}
+            <if test="searchName!= null and searchName!= ''">
+                AND cf.follow_remark LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!--    findCustomerConversations_hasConversation-->
+    <select id="findCustomerConversations_hasConversation"
+            resultMap="com.thqh.enterprise_wechat_backend.mapper.CustomerMapper.CustomerResultMap">
+        SELECT distinct c.*,cf.follow_remark
+        FROM chat_message cm
+        JOIN chat_message_user cmu ON cm.msgid = cmu.msgid
+        JOIN customer c ON cmu.to_user = c.external_userid
+        JOIN customer_follow cf ON c.external_userid=cf.external_userid
+        <where>
+            (cm.roomid is null or length(trim(cm.roomid)) = 0) and cmu.from_user = #{id} AND cmu.to_user =
+            c.external_userid
+            <if test="searchName!= null and searchName!= ''">
+                AND cf.follow_remark LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询群聊列表 -->
+    <select id="findGroupChatConversations"
+            resultMap="com.thqh.enterprise_wechat_backend.mapper.GroupChatMapper.GroupChatResultMap">
+        SELECT distinct gc.*
+        FROM group_chat_member gcm
+        JOIN group_chat gc ON gc.chat_id = gcm.chat_id
+
+        <where>
+            gcm.userid = #{id}
+            <if test="searchName != null and searchName != ''">
+                AND gc.name LIKE CONCAT('%', #{searchName}, '%')
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 群聊查询：roomid = 指定群ID -->
+    <select id="selectByGroupChatId" resultMap="ChatMessageResultMap">
+        SELECT * FROM chat_message
+        <where>
+            roomid = #{roomId}
+
+            <if test="filter_msgtype == ''">
+                <if test="searchName != null and searchName != '' ">
+                    AND msgtype = 'text'
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'text'">
+                AND msgtype = 'text'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'picture'">
+                AND msgtype = 'image' OR msgtype = 'emoticon'
+            </if>
+
+            <if test="filter_msgtype == 'file'">
+                AND msgtype = 'file'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.file.filename') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+        </where>
+        ORDER BY msgtime ASC
+    </select>
+
+    <select id="selectByGroupChatId_COUNT" resultType="Long">
+        SELECT COUNT(0) FROM chat_message
+        <where>
+            roomid = #{roomId}
+
+            <if test="filter_msgtype == ''">
+                <if test="searchName != null and searchName != '' ">
+                    AND msgtype = 'text'
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'text'">
+                AND msgtype = 'text'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'picture'">
+                AND msgtype = 'image' OR msgtype = 'emoticon'
+            </if>
+
+            <if test="filter_msgtype == 'file'">
+                AND msgtype = 'file'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.file.filename') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY msgtime ASC
+    </select>
+
+
+    <!-- 非群聊查询：通过chat_message_user关联chat_message -->
+    <select id="selectByParticipants" resultMap="ChatMessageResultMap">
+        <!--         SELECT m.*
+                 FROM chat_message m
+                          JOIN chat_message_user u ON u.msgid = m.msgid
+                 WHERE ((u.from_user = #{fromUser} AND u.to_user = #{toUser}) or (u.from_user = #{toUser} AND u.to_user = #{fromUser}))
+                   AND (m.roomid is null or length(trim(m.roomid)) = 0)
+                 ORDER BY m.msgtime desc -->
+
+        SELECT m.*
+        FROM chat_message m
+        JOIN chat_message_user u ON u.msgid = m.msgid
+        <where>
+            ((u.from_user = #{fromUser} AND u.to_user = #{toUser})
+            OR (u.from_user = #{toUser} AND u.to_user = #{fromUser}))
+            AND (m.roomid is null or length(trim(m.roomid)) = 0)
+
+            <if test="filter_msgtype == ''">
+                <if test="searchName != null and searchName != '' ">
+                    AND msgtype = 'text'
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'text'">
+                AND msgtype = 'text'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'picture'">
+                AND msgtype = 'image' OR msgtype = 'emoticon'
+            </if>
+
+            <if test="filter_msgtype == 'file'">
+                AND msgtype = 'file'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.file.filename') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY m.msgtime desc
+    </select>
+
+    <select id="selectByParticipants_COUNT" resultType="Long">
+        SELECT COUNT(0)
+        FROM chat_message m
+        JOIN chat_message_user u ON u.msgid = m.msgid
+        <where>
+            ((u.from_user = #{fromUser} AND u.to_user = #{toUser})
+            OR (u.from_user = #{toUser} AND u.to_user = #{fromUser}))
+            AND (m.roomid IS NULL OR m.roomid = '')
+
+            <if test="filter_msgtype == ''">
+                <if test="searchName != null and searchName != '' ">
+                    AND msgtype = 'text'
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'text'">
+                AND msgtype = 'text'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.text.content') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+
+            <if test="filter_msgtype == 'picture'">
+                AND msgtype = 'image' OR msgtype = 'emoticon'
+            </if>
+
+            <if test="filter_msgtype == 'file'">
+                AND msgtype = 'file'
+                <if test="searchName != null and searchName != '' ">
+                    AND JSON_EXTRACT(chat_msg, '$.file.filename') LIKE CONCAT('%', #{searchName}, '%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>

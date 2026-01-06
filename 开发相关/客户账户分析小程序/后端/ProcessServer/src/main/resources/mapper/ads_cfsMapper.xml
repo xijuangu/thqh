@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.ads_cfsMapper">
+    <!--     int insertList_ads_cfs(List<ads_cfs> ads_cfs_list);-->
+    <insert id="insertList_ads_cfs">
+        insert into ads_futures_client_finance_status values
+        <foreach collection="ads_cfs_list" item="ads" separator=",">
+            (#{ads.client_id},#{ads.period},#{ads.begin_busi_date},#{ads.end_busi_date},#{ads.yes_rights},#{ads.rights},#{ads.market_deposit},#{ads.trading_profit_and_loss},#{ads.charge},#{ads.net_profit},#{ads.net_deposit},#{ads.opt_premium_income},#{ads.opt_premium_pay},#{ads.profit_days},#{ads.loss_days},#{ads.trade_win_rate},#{ads.turnover},#{ads.sharpe_ratio},#{ads.yield_rate},#{ads.trade_days})
+        </foreach>
+    </insert>
+
+<!--    void truncate_ads_cfs();-->
+    <delete id="truncate_ads_cfs">
+        truncate table ads_futures_client_finance_status
+    </delete>
+
+    <!--    int getCount_designatedTable(@Param("tableName") String tableName);-->
+    <select id="getCount_designatedTable" resultType="int">
+        select count(*) from ${tableName}
+    </select>
+</mapper>

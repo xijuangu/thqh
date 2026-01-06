@@ -1,0 +1,44 @@
+/* pages/privacyPage/privacyPage.wxss */
+page {
+  background-color: rgb(241, 241, 241);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  /* background-color: rgb(118, 235, 235); */
+  position: relative;
+}
+
+.privacy {
+  height: 120rpx;
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgb(255, 255, 255);
+}
+
+.privacy2,.privacy3,.privacy4{
+  border-top: solid 1rpx rgba(173, 173, 173,0.5);
+}
+
+.privacy-name {
+  width: 80%;
+}
+
+.tradeCountLogin .jumpArrow {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* background-color: violet; */
+}
+
+.jumpArrow image {
+  width: 26px;
+  height: 26px;
+}

@@ -1,0 +1,2 @@
+<!--pages/otterLink/outterLink.wxml-->
+<web-view src="{{content}}" bindload="bindload"></web-view>

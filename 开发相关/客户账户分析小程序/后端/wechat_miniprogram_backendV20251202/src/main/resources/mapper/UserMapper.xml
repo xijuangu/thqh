@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.wechat_miniprogram_backend.mapper.UserMapper">
+
+
+    <!-- 结果映射 -->
+    <resultMap id="UserResultMap" type="com.thqh.wechat_miniprogram_backend.entity.User">
+        <id property="id" column="id"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="nickname" column="nickname"/>
+        <result property="openid" column="openid"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="updatedBy" column="updated_by"/>
+    </resultMap>
+
+    <!-- 插入用户 -->
+    <insert id="insertUser" parameterType="com.thqh.wechat_miniprogram_backend.entity.User" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO users (phone_number, nickname, openid, created_by, updated_by)
+        VALUES (#{phoneNumber}, #{nickname}, #{openid}, #{createdBy}, #{updatedBy})
+    </insert>
+
+
+    <!-- 查找所有用户 -->
+    <select id="findAllUsers" resultMap="UserResultMap">
+        SELECT id,
+               phone_number,
+               nickname,
+               openid,
+               created_at,
+               created_by,
+               updated_at,
+               updated_by
+        FROM users
+    </select>
+
+    <!-- 更新用户 -->
+    <update id="updateUser" parameterType="com.thqh.wechat_miniprogram_backend.entity.User">
+        UPDATE users
+        SET phone_number = #{phoneNumber},
+            nickname     = #{nickname},
+            updated_by   = #{updatedBy},
+            updated_at   = NOW()
+        WHERE id = #{id}
+    </update>
+
+<!--    &lt;!&ndash; 删除用户 &ndash;&gt;-->
+<!--    <delete id="deleteUser" parameterType="long">-->
+<!--        DELETE-->
+<!--        FROM users-->
+<!--        WHERE id = #{id}-->
+<!--    </delete>-->
+
+
+    <!-- 根据手机号查找用户 -->
+    <select id="findUserByPhoneNumber" parameterType="string" resultMap="UserResultMap">
+        SELECT id,
+               phone_number,
+               nickname,
+               openid,
+               created_at,
+               created_by,
+               updated_at,
+               updated_by
+        FROM users
+        WHERE phone_number = #{phoneNumber}
+    </select>
+
+    <!-- 根据openid查找用户 -->
+    <select id="findUserByOpenid" parameterType="string" resultMap="UserResultMap">
+        SELECT id,
+               phone_number,
+               nickname,
+               openid,
+               created_at,
+               created_by,
+               updated_at,
+               updated_by
+        FROM users
+        WHERE openid = #{openid}
+    </select>
+
+
+    <!-- 根据用户ID查找用户 -->
+    <select id="findUserById" parameterType="long" resultMap="UserResultMap">
+        SELECT id,
+               phone_number,
+               nickname,
+               openid,
+               created_at,
+               created_by,
+               updated_at,
+               updated_by
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+</mapper>

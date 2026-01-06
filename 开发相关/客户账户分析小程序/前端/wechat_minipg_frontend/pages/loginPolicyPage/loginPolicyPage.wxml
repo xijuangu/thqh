@@ -1,0 +1,67 @@
+<!--pages/loginPolicyPage/loginPolicyPage.wxml-->
+<topNev title="登录政策" barOperation="{{barOperation}}" privacyAuthInfo="" privacyAuthShow="{{privacyAuthShow}}" show_background_color="show_background_color" style="position: fixed;z-index: 90;"></topNev>
+
+<view class="policy-container" style="position: absolute; z-index: 80; margin-top: 220rpx;padding: 10px;">
+  <view class="mainTitle" style="width: 100%; height: 100rpx;  display: flex; align-items: center;justify-content: center;font-size: 36rpx; font-weight: 800;">
+    <text>登录政策
+    
+    
+    </text>
+  </view>
+  <view class="info" style=" margin-bottom: 10rpx ; font-weight: 800;">
+    <text>生效日期：2025年09月01日
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">尊敬的用户，欢迎您登录客户账户分析小程序。我们将按照《登录政策》处理您的个人信息， 因此请您务必在授权登录之前，认真完整地阅读并理解、同意本政策条款。
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">当您使用本小程序时，您可以选择以下两种登录方式之一完成授权登录：
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">1. 微信号授权登录：
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">当您使用微信号授权登录功能时，您可自主选择用于本小程序的用户头像与昵称。您可选择授权使用您本机当前已登录微信的微信头像和昵称，也可通过摄像头拍摄或从相册上传图片作为头像，并自行设置昵称。这些个人信息是我们为您提供本小程序完整服务的必要信息，仅用于小程序前台功能主页以及个人中心页的用户资料展示，我们承诺不会向任何第三方透露您的此类个人信息（法律法规要求除外）。在您确认授权后，系统将通过微信开放平台提供的技术接口，获取您的openid作为您用户身份的唯一标识，该标识将安全存储于我们的服务器，用于为您提供持续的服务。
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">2. 手机号授权登录：
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">当您使用手机号授权登录功能时，您可直接授权使用当前设备已绑定的手机号码，系统将基于该手机号完成快捷身份核验，无需额外操作。若您选择使用微信绑定手机号以外的其他号码，我们将通过腾讯科技提供的服务平台，向您输入的目标手机号发送验证码，以核实该手机号为您本人使用且本次登录行为出于您本人真实意愿，您接收并正确填写验证码，完成身份核验后即可登录。手机号是实现快捷身份验证、，以及我们为您提供小程序基础服务（如账号关联、服务记录同步等）所必需的个人信息，无有效手机号将无法完成登录及使用核心功能。无论您选择上述哪种验证方式，在您确认授权后，系统将通过微信开放平台提供的技术接口，获取并验证您所选的手机号，并将该手机号作为您在本小程序内的唯一用户身份标识，该标识将安全存储于我们的服务器，用于为您提供持续的服务。
+
+
+    </text>
+  </view>
+
+  <view class="policy">
+    <text class="content">当在使用交易登录时，您需要向我们提供您的资金账号和交易密码，用于验证您的身份是否有效，此类信息属于该功能的必要信息，若您不提供，您将无法完成交易登录，也将无法使用本小程序提供的账户分析报表查看的核心功能。
+
+    </text>
+  </view>
+
+
+
+
+
+
+
+
+</view>

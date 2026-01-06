@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.IndicatorPeriodDataMapper">
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryNewCustomerIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryNewCustomerIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        personnel_code,
+        (CASE
+        WHEN CLIENT_TYPE = '0' THEN 'PER'
+        WHEN CLIENT_TYPE = '1' THEN 'IND'
+        WHEN CLIENT_TYPE = '3' THEN 'ORG'
+        END) AS client_type,
+        COUNT(CASE WHEN OPEN_DATE BETWEEN #{startDate1} AND #{endDate1} THEN 1 ELSE NULL END) AS period1,
+        COUNT(CASE WHEN OPEN_DATE BETWEEN #{startDate2} AND #{endDate2} THEN 1 ELSE NULL END) AS period2
+        FROM T_CLIENT tc,
+        (SELECT DISTINCT personnel_code, CAST(class_code AS CHAR) AS class_code_str, CAST(sub_code AS CHAR) AS sub_code_str
+        FROM client_class_info
+        WHERE personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        )
+        cci
+        WHERE
+        <!-- 根据class_code_str动态计算截取位置 -->
+        SUBSTRING(tc.client_class, (2 * CAST(cci.class_code_str AS UNSIGNED) - 1), 2) = cci.sub_code_str
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY personnel_code,
+        (CASE
+        WHEN CLIENT_TYPE = '0' THEN 'PER'
+        WHEN CLIENT_TYPE = '1' THEN 'IND'
+        WHEN CLIENT_TYPE = '3' THEN 'ORG'
+        END)
+        ORDER BY personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryTotalCustomerIndicator(@Param("endDate1") String endDate1, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryTotalCustomerIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        personnel_code,
+        (CASE
+        WHEN CLIENT_TYPE = '0' THEN 'PER'
+        WHEN CLIENT_TYPE = '1' THEN 'IND'
+        WHEN CLIENT_TYPE = '3' THEN 'ORG'
+        END) AS client_type,
+        COUNT(CASE WHEN OPEN_DATE &lt;= #{endDate1} AND (ISACTIVE != 3 OR CLOSE_DATE &gt; #{endDate1}) THEN 1 ELSE NULL END) AS period1,
+        COUNT(CASE WHEN OPEN_DATE &lt;= #{endDate2} AND (ISACTIVE != 3 OR CLOSE_DATE &gt; #{endDate2}) THEN 1 ELSE NULL END) AS period2
+        FROM T_CLIENT tc,
+        (SELECT DISTINCT personnel_code, CAST(class_code AS CHAR) AS class_code_str, CAST(sub_code AS CHAR) AS sub_code_str
+        FROM client_class_info
+        WHERE personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        )
+        cci
+        WHERE
+        <!-- 根据class_code_str动态计算截取位置 -->
+        SUBSTRING(tc.client_class, (2 * CAST(cci.class_code_str AS UNSIGNED) - 1), 2) = cci.sub_code_str
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY personnel_code,
+        (CASE
+        WHEN CLIENT_TYPE = '0' THEN 'PER'
+        WHEN CLIENT_TYPE = '1' THEN 'IND'
+        WHEN CLIENT_TYPE = '3' THEN 'ORG'
+        END)
+        ORDER BY personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryEquityIndicator(@Param("startDate1") String startDate1, @Param("startDate2") String startDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryEquityIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        WITH startDate1_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS startDate1_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt; #{startDate1} AND TRADE_FLAG =
+        '1'
+        ),
+        startDate2_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS startDate2_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt; #{startDate2} AND TRADE_FLAG =
+        '1'
+        )
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE = (SELECT startDate1_Fixed FROM startDate1_Fixed) THEN tcs.RIGHTS
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+<!--        CASE WHEN #{startDate2} = (SELECT startDate2_Fixed FROM startDate2_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = #{startDate2} THEN tcs.RIGHTS ELSE 0 END-->
+<!--        WHEN #{startDate2} != (SELECT startDate2_Fixed FROM startDate2_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = (SELECT startDate2_Fixed FROM startDate2_Fixed) THEN tcs.YES_RIGHTS ELSE 0 END-->
+<!--        END-->
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE = (SELECT startDate2_Fixed FROM startDate2_Fixed) THEN tcs.RIGHTS
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE IN(#{startDate1},#{startDate2},(SELECT startDate1_Fixed FROM startDate1_Fixed),(SELECT
+        startDate2_Fixed FROM startDate2_Fixed)))
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryEndEquityIndicator(@Param("endDate1") String endDate1, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryEndEquityIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        WITH endDate1_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS endDate1_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt;= #{endDate1} AND TRADE_FLAG =
+        '1'
+        ),
+        endDate2_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS endDate2_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt;= #{endDate2} AND TRADE_FLAG =
+        '1'
+        )
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+<!--        CASE WHEN #{endDate1} = (SELECT endDate1_Fixed FROM endDate1_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = #{endDate1} THEN tcs.RIGHTS ELSE 0 END-->
+<!--        WHEN #{endDate1} != (SELECT endDate1_Fixed FROM endDate1_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = (SELECT endDate1_Fixed FROM endDate1_Fixed) THEN tcs.RIGHTS ELSE 0 END-->
+<!--        END-->
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN #{endDate1} = (SELECT endDate1_Fixed FROM endDate1_Fixed) AND tcs.BUSI_DATE = #{endDate1}  THEN tcs.RIGHTS
+        WHEN #{endDate1} != (SELECT endDate1_Fixed FROM endDate1_Fixed) AND tcs.BUSI_DATE = (SELECT endDate1_Fixed FROM endDate1_Fixed) THEN tcs.RIGHTS
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+<!--        CASE WHEN #{endDate2} = (SELECT endDate2_Fixed FROM endDate2_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = #{endDate2} THEN tcs.RIGHTS ELSE 0 END-->
+<!--        WHEN #{endDate2} != (SELECT endDate2_Fixed FROM endDate2_Fixed) THEN-->
+<!--        CASE WHEN tcs.BUSI_DATE = (SELECT endDate2_Fixed FROM endDate2_Fixed) THEN tcs.RIGHTS ELSE 0 END-->
+<!--        END-->
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN #{endDate2} = (SELECT endDate2_Fixed FROM endDate2_Fixed) AND tcs.BUSI_DATE = #{endDate2}  THEN tcs.RIGHTS
+        WHEN #{endDate2} != (SELECT endDate2_Fixed FROM endDate2_Fixed) AND tcs.BUSI_DATE = (SELECT endDate2_Fixed FROM endDate2_Fixed) THEN tcs.RIGHTS
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE IN(#{endDate1},#{endDate2},(SELECT endDate1_Fixed FROM endDate1_Fixed),(SELECT endDate2_Fixed
+        FROM endDate2_Fixed)))
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryEquityDayAvgIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryEquityDayAvgIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        WITH trade_date_count1 AS (
+        SELECT COUNT(1) AS trade_date_count1 FROM T_PUB_DATE WHERE TRADE_FLAG = '1' AND BUSI_DATE BETWEEN #{startDate1}
+        AND #{endDate1}
+        ),
+        trade_date_count2 AS (
+        SELECT COUNT(1) AS trade_date_count2 FROM T_PUB_DATE WHERE TRADE_FLAG = '1' AND BUSI_DATE BETWEEN #{startDate2}
+        AND #{endDate2}
+        )
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.RIGHTS
+        ELSE 0
+        END
+        )/(SELECT trade_date_count1 FROM trade_date_count1) AS period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.RIGHTS
+        ELSE 0
+        END
+        )/(SELECT trade_date_count2 FROM trade_date_count2) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryDepositIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryDepositIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.FUND_IN
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.FUND_IN
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryWithdrawalIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryWithdrawalIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.FUND_OUT
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.FUND_OUT
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryNetDepositIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryNetDepositIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.FUND_IN
+        ELSE 0
+        END)-SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.FUND_OUT
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.FUND_IN
+        ELSE 0
+        END
+        )-SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.FUND_OUT
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryTotalFeeIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryTotalFeeIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.TOTAL_TRANSFEE
+        ELSE 0
+        END
+        ) AS
+        period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.TOTAL_TRANSFEE
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryRetentionFeeIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryRetentionFeeIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.TOTAL_TRANSFEE
+        ELSE 0
+        END
+        ) - SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.TOTAL_MARKET_TRANSFEE
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(CASE WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.TOTAL_TRANSFEE ELSE 0 END) - SUM(CASE
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.TOTAL_MARKET_TRANSFEE ELSE 0 END) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+    <!--    List<IndicatorPeriodDataQueryResult> queryTotalProfitLossIndicator(@Param("startDate1") String startDate1, @Param("endDate1") String endDate1, @Param("startDate2") String startDate2, @Param("endDate2") String endDate2, @Param("personnel_code_list") String[] personnel_code_list);-->
+    <select id="queryTotalProfitLossIndicator" resultType="com.org.bddsserver.dto.IndicatorPeriodDataQueryResult">
+        SELECT
+        cci.personnel_code as personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END AS client_type,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate1} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1} THEN tcs.TODAY_PROFIT
+        ELSE 0
+        END
+        ) AS period1,
+        SUM(
+        CASE WHEN NOT OPEN_DATE &lt;= #{endDate2} THEN 0
+        WHEN tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2} THEN tcs.TODAY_PROFIT
+        ELSE 0
+        END
+        ) AS period2
+        FROM client_class_info cci
+        INNER JOIN T_CLIENT tc ON
+        <!-- 修改连接条件：根据class_code动态截取client_class -->
+        SUBSTRING(tc.client_class, (2 * cci.class_code - 1), 2) = cci.sub_code
+        INNER JOIN T_CLIENT_SETT tcs ON tc.client_id = tcs.client_id
+        AND (tcs.BUSI_DATE BETWEEN #{startDate1} AND #{endDate1}
+        OR tcs.BUSI_DATE BETWEEN #{startDate2} AND #{endDate2})
+        WHERE
+        cci.personnel_code IN
+        <foreach collection="personnel_code_list" item="personnel_code" open="(" separator="," close=")">
+            #{personnel_code}
+        </foreach>
+        AND tc.CLIENT_TYPE IN ('0','1','3')
+        GROUP BY cci.personnel_code,
+        CASE
+        WHEN tc.CLIENT_TYPE = '0' THEN 'PER'
+        WHEN tc.CLIENT_TYPE = '1' THEN 'IND'
+        WHEN tc.CLIENT_TYPE = '3' THEN 'ORG'
+        END
+        ORDER BY cci.personnel_code
+    </select>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.logdemo.lightserver.Mapper.responseMapper">
+    <!--    //找有效当日理论价-->
+    <!--    /*传入当天日期，基于当天日期查找有效当日理论价*/-->
+    <!--    responseDto findValidTheoryPrice(String indicator, String date);-->
+    <select id="findValidTheoryPrice" resultType="com.logdemo.lightserver.dto.responseDto">
+        SELECT date as currentdate,#{indicator} as name,${indicator} as validPrice FROM data WHERE date = (SELECT
+        MAX(date) FROM data WHERE date &lt;= #{date} AND ${indicator} IS NOT NULL );
+    </select>
+
+    <!--    //找有效上一日理论价-->
+    <!--    /*传入有效当日理论价对应的日期，基于该日期查找有效上一日理论价*/-->
+    <!--    responseDto findValidLastTheoryPrice(String indicator, String date);-->
+    <select id="findValidLastTheoryPrice" resultType="com.logdemo.lightserver.dto.responseDto">
+        SELECT date as currentdate,#{indicator} as name,${indicator} as validPrice FROM data WHERE date &lt; (SELECT
+        MAX(date) FROM data WHERE date &lt;= #{date} AND ${indicator} IS NOT NULL ) ORDER BY date DESC limit 1;
+
+    </select>
+
+    <!--    //找有效前4日理论价-->
+    <!--    /*传入有效当日理论价对应的日期，基于该日期查找有效前4日理论价*/-->
+    <!--    responseDto findValidFourDaysTheoryPrice(String indicator, String date);-->
+    <select id="findValidFourDaysTheoryPrice" resultType="com.logdemo.lightserver.dto.responseDto">
+        SELECT date as currentdate,#{indicator} as name,${indicator} as validPrice
+        FROM data
+        WHERE date &lt;= (
+        SELECT MAX(date)
+        FROM data
+        WHERE date &lt;= #{date} AND ${indicator} IS NOT NULL
+        ) ORDER BY date DESC limit 1 offset 4;
+    </select>
+
+    <!--    responseDto findCurrentValidPrice(String indicator,String date);-->
+    <select id="findCurrentValidPrice" resultType="com.logdemo.lightserver.dto.responseDto">
+        select date as currentdate,#{indicator} as name,${indicator} as validPrice from data where date &lt;= #{date}
+        order by date desc limit 1;
+    </select>
+
+    <!--    responseDto findLastValidPrice(String indicator,String date);-->
+    <select id="findLastValidPrice" resultType="com.logdemo.lightserver.dto.responseDto">
+        select date as currentdate,#{indicator} as name,${indicator} as validPrice from data where date &lt;= #{date}
+        order by date desc limit 1 offset 1;
+    </select>
+
+    <!--    List<data> selectAllspodumene();-->
+    <select id="selectAllspodumene" resultType="com.logdemo.lightserver.pojo.data">
+        select * from data order by date desc
+    </select>
+
+    <!--    List<data> selectNewOne();-->
+    <select id="selectNewOne" resultType="com.logdemo.lightserver.pojo.data">
+        select * from `data` ORDER BY date desc LIMIT 1
+    </select>
+</mapper>

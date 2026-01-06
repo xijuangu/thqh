@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.ads_ptaMapper">
+<!--     int insertList_ads_pta(List<ads_pta> ads_pta_list);-->
+    <insert id="insertList_ads_pta">
+        insert into ads_futures_product_trade_analysis values
+        <foreach collection="ads_pta_list" item="ads" separator=",">
+                (#{ads.client_id},#{ads.product_id},#{ads.period},#{ads.begin_busi_date},#{ads.end_busi_date},#{ads.rncjl},#{ads.zcjl},#{ads.pcyk},#{ads.cje},#{ads.ccyk},#{ads.jyyk},#{ads.sxf},#{ads.jlr})
+        </foreach>
+    </insert>
+
+<!--    void truncate_ads_pta();-->
+    <delete id="truncate_ads_pta">
+        truncate table ads_futures_product_trade_analysis
+    </delete>
+</mapper>

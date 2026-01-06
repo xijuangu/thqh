@@ -1,0 +1,38 @@
+<!--pages/tradeLoginPage/tadeLoginPage.wxml-->
+
+<view class="container">
+  <topNev title="交易账号登录" barOperation="2" privacyAuthInfo = "" privacyAuthShow = "non-show" show_background_color = "show_background_color" style="position: fixed;z-index: 90;"></topNev>
+  <view class="tradeContainer">
+    <view class="info">
+      <text>交易账号登录</text>
+    </view>
+    <form bindsubmit="tradeAcoountLogin">
+      <view class="inputBox">
+        <view class="inputBoxPattern accountNumber">
+          <image src="/pages/images/卡.png" />
+          <input type="text" name="accountnumber" placeholder="请输入交易账号" />
+        </view>
+        <view class="inputBoxPattern accountPW">
+          <image src="/pages/images/钥匙.png" />
+          <input type="text" name="accountpassword" placeholder="请输入密码" password="{{passWordType}}" />
+          <image class="icon eye" src="/pages/images/眼睛_隐藏_o.png" hidden="{{hidePW}}" bind:touchstart="showPW" bind:touchend="hidePW" />
+          <image class="icon eye" src="/pages/images/眼睛_显示_o.png" hidden="{{showPW}}" />
+        </view>
+      </view>
+      <view class="submitBtn" >
+        <button class="btn" formType="submit" type='primary'>登录</button>
+      </view>
+    </form>
+  </view>
+
+  <view class="warnContainer" wx:if="{{warnTextShow == 1}}"  animation="{{animation_warnText}}">
+    <view class="warnText" hidden="{{warnText1}}">交易账号不能为空</view>
+    <view class="warnText" hidden="{{warnText2}}">密码不能为空</view>
+    <view class="warnText" hidden="{{warnText3}}">账号或密码错误</view>
+    <view class="warnText" hidden="{{warnText4}}">网络错误</view>
+  </view>
+
+ <!-- 加载过程中的界面禁用遮罩 -->
+  <view class="mask" wx:if="{{mask == 'on'}}">
+  </view>
+</view>

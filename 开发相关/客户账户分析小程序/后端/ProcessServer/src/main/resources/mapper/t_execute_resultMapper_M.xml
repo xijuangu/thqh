@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_execute_resultMapper_M">
+    <!--   t_execute_result getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_execute_result">
+        select * from T_EXECUTE_RESULT where id = #{id}
+    </select>
+    <!--        List<t_execute_result> getAll(@Param("id1")int id1,@Param("id2")int id2);-->
+    <select id="getAll" resultType="org.example.processserver.pojo.t_execute_result">
+        select * from T_EXECUTE_RESULT where id in (select id from (SELECT id FROM T_EXECUTE_RESULT where id BETWEEN
+        #{id1} and #{id2}) AS temp)
+    </select>
+    <!--    List<t_execute_result> getIncrement(@Param("startDate")String startDate,@Param("endDate")String endDate);-->
+    <select id="getIncrement" resultType="org.example.processserver.pojo.t_execute_result">
+        select * from T_EXECUTE_RESULT where busi_date BETWEEN #{startDate} AND #{endDate}
+
+    </select>
+
+    <!--    int deleteFrom_TER_encrypt_temp();-->
+    <delete id="deleteFrom_TER_encrypt_temp">
+        TRUNCATE TER_encrypt_temp
+    </delete>
+    <!--    List<encrypt_field> TER_getDistinct();-->
+    <select id="TER_getDistinct" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT fund_account_id,trade_account_id,client_id from T_EXECUTE_RESULT where encrypt_lable = 0
+    </select>
+    <!--    int insertInto_TER_encrypt_temp(@Param("TER_B_fundaccountId")String TER_B_fundaccountId,-->
+    <!--    @Param("TER_A_fundaccountId")String TER_A_fundaccountId,-->
+    <!--    @Param("TER_B_tradeaccountId")String TER_B_tradeaccountId,-->
+    <!--    @Param("TER_A_tradeaccountId")String TER_A_tradeaccountId);-->
+    <insert id="insertInto_TER_encrypt_temp">
+        insert into
+        TER_encrypt_temp(TER_B_fundaccountId,TER_A_fundaccountId,TER_B_tradeaccountId,TER_A_tradeaccountId,TER_B_clientId,TER_A_clientId)
+        values(#{TER_B_fundaccountId},#{TER_A_fundaccountId},#{TER_B_tradeaccountId},#{TER_A_tradeaccountId},#{TER_B_clientId},#{TER_A_clientId})
+    </insert>
+
+
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_EXECUTE_RESULT
+    </select>
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_EXECUTE_RESULT A INNER JOIN TER_encrypt_temp B ON A.fund_account_id = B.TER_B_fundaccountId and
+        A.trade_account_id = B.TER_B_tradeaccountId and A.client_id = B.TER_B_clientId SET
+        A.fund_account_id=B.TER_A_fundaccountId,A.trade_account_id=B.TER_A_tradeaccountId,A.client_id=B.TER_A_clientId,A.encrypt_lable=1
+        WHERE A.encrypt_lable=0 and A.id IN (SELECT id FROM (SELECT id FROM T_EXECUTE_RESULT where id BETWEEN #{id1} and
+        #{id2}) AS temp)
+    </update>
+
+
+    <!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_EXECUTE_RESULT A inner join TER_encrypt_temp B ON A.fund_account_id = B.TER_B_fundaccountId and
+        A.trade_account_id = B.TER_B_tradeaccountId and A.client_id = B.TER_B_clientId SET
+        A.fund_account_id=B.TER_A_fundaccountId,A.trade_account_id=B.TER_A_tradeaccountId,A.client_id=B.TER_A_clientId,A.encrypt_lable=1
+        where A.id in (select id from (select id from T_EXECUTE_RESULT where encrypt_lable=0) AS temp)
+    </update>
+    <!--    List<t_execute_result> Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_EXECUTE_RESULT where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+
+</mapper>

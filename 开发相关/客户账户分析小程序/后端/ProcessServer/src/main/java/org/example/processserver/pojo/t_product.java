@@ -1,0 +1,78 @@
+package org.example.processserver.pojo;
+
+import lombok.Data;
+import org.springframework.stereotype.Component;
+
+@Data
+@Component
+public class t_product {
+    private String product_id;
+    private String trade_type;
+    private String market_id;
+    private String product_name;
+    private String product_type;
+    private Double hand_amount;
+    private String delivery_type;
+    private String ds_date;
+    private String data_source;
+    private String busi_date;
+    private Double max_hold;
+    private Double min_hand;
+    private Double max_hand;
+    private Double price_unit;
+    private Double high_limit;
+    private Double low_limit;
+    private String trade_rule;
+    private Double deliv_date;
+    private String status;
+    private Double eo_transfee_amt;
+    private Double eo_transfee_rate;
+    private Double ot_transfee_amt;
+    private Double ot_transfee_rate;
+    private Double deliv_transfee_amt;
+    private Double deliv_transfee_rate;
+    private Double spec_margin_amt;
+    private Double spec_margin_rate;
+    private Double hedge_margin_amt;
+    private Double hedge_margin_rate;
+    private String money_type;
+    private String oper_code;
+    private String oper_date;
+    private String oper_time;
+    private Double denominator;
+    private Double exponent;
+    private String deliv_rule;
+    private Double hedge_eo_transfee_amt;
+    private Double hedge_eo_transfee_rate;
+    private Double hedge_ot_transfee_amt;
+    private Double hedge_ot_transfee_rate;
+    private Double hedge_deliv_transfee_amt;
+    private Double hedge_deliv_transfee_rate;
+    private Double arbit_eo_transfee_amt;
+    private Double arbit_eo_transfee_rate;
+    private Double arbit_ot_transfee_amt;
+    private Double arbit_ot_transfee_rate;
+    private Double arbit_deliv_transfee_amt;
+    private Double arbit_deliv_transfee_rate;
+    private Double arbit_margin_amt;
+    private Double arbit_margin_rate;
+    private String foreign_currency_pledge;
+    private Double product_month;
+    private String deliv_type;
+    private String strike_type;
+    private Double execute_transfee_amt;
+    private Double execute_transfee_rate;
+    private Double strike_transfee_amt;
+    private Double strike_transfee_rate;
+    private Double hedge_execute_transfee_amt;
+    private Double hedge_execute_transfee_rate;
+    private Double hedge_strike_transfee_amt;
+    private Double hedge_strike_transfee_rate;
+    private Double arbit_execute_transfee_amt;
+    private Double arbit_execute_transfee_rate;
+    private Double arbit_strike_transfee_amt;
+    private Double arbit_strike_transfee_rate;
+    private String margin_alg_type;
+    private String quoted_price_unit;
+    private String transfee_algo;
+}

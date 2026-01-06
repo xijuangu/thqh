@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 定义日志格式 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 普通日志文件路径 -->
+    <property name="NORMAL_LOG_FILE" value="logs/application.log"/>
+
+    <!-- 错误日志文件路径 -->
+    <property name="ERROR_LOG_FILE" value="logs/error.log"/>
+
+    <!-- 普通日志的 RollingFileAppender-->
+    <appender name="NORMAL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日志文件路径 -->
+        <file>${NORMAL_LOG_FILE}</file>
+        <!-- 日志格式 -->
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 日志文件配置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志文件名-每天生成一个新的压缩日志文件，每个文件大小限制为10MB，保留30天 -->
+            <fileNamePattern>${NORMAL_LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- 此处触发策略为可选补充，SizeBasedTriggeringPolicy 本身已包含大小判断，实际效果不会重复生效，可以注释掉 -->
+        <!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+        <!--            <maxFileSize>10MB</maxFileSize>-->
+        <!--        </triggeringPolicy>-->
+    </appender>
+
+    <!-- 错误日志的 RollingFileAppender -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日志文件路径 -->
+        <file>${ERROR_LOG_FILE}</file>
+        <!-- 日志格式 -->
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 日志文件配置 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志文件名-每天生成一个新的压缩日志文件，每个文件大小限制为10MB，保留30天 -->
+            <fileNamePattern>${ERROR_LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- 此处触发策略为可选补充，SizeBasedTriggeringPolicy 本身已包含大小判断，实际效果不会重复生效，可以注释掉 -->
+        <!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+        <!--            <maxFileSize>10MB</maxFileSize>-->
+        <!--        </triggeringPolicy>-->
+    </appender>
+
+    <!-- 异步普通日志-->
+    <appender name="ASYNC_NORMAL_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="NORMAL_FILE"/>
+    </appender>
+
+    <!-- 异步错误日志-->
+    <appender name="ASYNC_ERROR_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="ERROR_FILE"/>
+    </appender>
+
+    <!-- 控制台输出（生产环境中通常不需要，可以注释掉或移除）-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根日志记录器-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ASYNC_NORMAL_FILE"/>
+        <appender-ref ref="ASYNC_ERROR_FILE"/>
+    </root>
+
+    <!-- 为 Mybatis 设置日志级别-->
+    <logger name="org.mybatis" level="DEBUG"/>
+    <logger name="org.mybatis.spring" level="DEBUG"/>
+    <!-- 数据源日志级别-->
+    <logger name="com.zaxxer.hikari" level="DEBUG"/>
+
+</configuration>

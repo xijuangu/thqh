@@ -1,0 +1,15 @@
+2025-12-30 15:19:56.698 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Starting WechatMiniprogramManagementBackendApplicationTests using Java 17.0.11 on DESKTOP-DPCAV3Q with PID 12900 (started by thqh in C:\Users\thqh\Desktop\交接资料\开发相关\客户账户分析小程序\后端\wechat_miniprogram_management_backend)
+2025-12-30 15:19:56.698 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - The following 1 profile is active: "prod"
+2025-12-30 15:19:56.710 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2025-12-30 15:19:58.839 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-12-30 15:19:58.887 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Started WechatMiniprogramManagementBackendApplicationTests in 2.508 seconds (JVM running for 3.189)
+2025-12-30 17:33:04.217 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Starting WechatMiniprogramManagementBackendApplicationTests using Java 17.0.11 on DESKTOP-DPCAV3Q with PID 23644 (started by thqh in C:\Users\thqh\Desktop\交接资料\开发相关\客户账户分析小程序\后端\wechat_miniprogram_management_backend)
+2025-12-30 17:33:04.220 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - The following 1 profile is active: "prod"
+2025-12-30 17:33:04.226 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2025-12-30 17:33:06.274 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-12-30 17:33:06.313 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Started WechatMiniprogramManagementBackendApplicationTests in 2.444 seconds (JVM running for 3.301)
+2025-12-30 17:38:01.618 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Starting WechatMiniprogramManagementBackendApplicationTests using Java 17.0.11 on DESKTOP-DPCAV3Q with PID 15756 (started by thqh in C:\Users\thqh\Desktop\交接资料\开发相关\客户账户分析小程序\后端\wechat_miniprogram_management_backend)
+2025-12-30 17:38:01.619 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - The following 1 profile is active: "prod"
+2025-12-30 17:38:01.625 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2025-12-30 17:38:03.581 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-12-30 17:38:03.614 [main] INFO  c.t.w.WechatMiniprogramManagementBackendApplicationTests - Started WechatMiniprogramManagementBackendApplicationTests in 2.353 seconds (JVM running for 3.025)

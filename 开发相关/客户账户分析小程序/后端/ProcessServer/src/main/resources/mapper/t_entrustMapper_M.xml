@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_entrustMapper_M">
+    <!--   t_entrust getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_entrust">
+        select * from T_ENTRUST where id = #{id}
+    </select>
+
+    <!--    int deleteFrom_TE_encrypt_temp();-->
+    <delete id="deleteFrom_TE_encrypt_temp">
+        delete from TE_encrypt_temp
+    </delete>
+    
+    <!--    List<encrypt_field> TE_encrypt_field();-->
+    <select id="TE_encrypt_field" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT client_id,fund_account_id,trade_account_id from T_ENTRUST where
+        encrypt_lable = 0
+    </select>
+    
+    <!--    int insertInto_TE_encrypt_temp(@Param("TE_B_fundaccountId")String TE_B_fundaccountId,-->
+    <!--    @Param("TE_A_fundaccountId")String TE_A_fundaccountId,-->
+    <!--    @Param("TE_B_tradeaccountId")String TE_B_tradeaccountId,-->
+    <!--    @Param("TE_A_tradeaccountId")String TE_A_tradeaccountId,-->
+    <!--    @Param("TE_B_clientId")String TE_B_clientId,-->
+    <!--    @Param("TE_A_clientId")String TE_A_clientId);-->
+    <insert id="insertInto_TE_encrypt_temp">
+        insert into
+        TE_encrypt_temp(TE_B_fundaccountId,TE_A_fundaccountId,TE_B_tradeaccountId,TE_A_tradeaccountId,TE_B_clientId,TE_A_clientId)
+        values(#{TE_B_fundaccountId},#{TE_A_fundaccountId},#{TE_B_tradeaccountId},#{TE_A_tradeaccountId},#{TE_B_clientId},#{TE_A_clientId})
+    </insert>
+
+
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_ENTRUST
+    </select>
+
+<!--    int Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_ENTRUST where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+    
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_ENTRUST A INNER JOIN TE_encrypt_temp B ON
+        A.fund_account_id = B.TE_B_fundaccountId and
+        A.trade_account_id = B.TE_B_tradeaccountId and
+        A.client_id = B.TE_B_clientId
+        SET
+        A.fund_account_id=B.TE_A_fundaccountId,
+        A.trade_account_id=B.TE_A_tradeaccountId,
+        A.client_id=B.TE_A_clientId,
+        encrypt_lable=1
+        WHERE A.id
+        IN (SELECT id FROM (SELECT id FROM T_ENTRUST where id BETWEEN #{id1} and #{id2}) AS temp)
+    </update>
+
+    <!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_ENTRUST A inner join TE_encrypt_temp B ON A.fund_account_id = B.TE_B_fundaccountId and
+        A.trade_account_id = B.TE_B_tradeaccountId and A.client_id=B.TE_B_clientId SET
+        A.fund_account_id=B.TE_A_fundaccountId,A.trade_account_id=B.TE_A_tradeaccountId,A.client_id=B.TE_A_clientId,A.encrypt_lable=1
+        where A.id in (select id from (select id from T_DELIVERY where encrypt_lable=0) AS temp)
+    </update>
+
+
+</mapper>

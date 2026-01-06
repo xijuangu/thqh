@@ -1,0 +1,39 @@
+<!--pages/privacyPage/privacyPage.wxml-->
+<topNev title="隐私与协议" barOperation="1" show_background_color = "show_background_color"></topNev>
+<view class="container">
+  <view class="privacy privacy1" bind:tap="toPrivacy1">
+    <view class="privacy-name">
+      <text>隐私政策（完整版）</text>
+    </view>
+
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png" />
+    </view>
+  </view>
+  <view class="privacy privacy2" bind:tap="toPrivacy2">
+    <view class="privacy-name">
+      <text>个人信息收集清单</text>
+    </view>
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png" />
+    </view>
+  </view>
+  <view class="privacy privacy3" bind:tap="toPrivacy3">
+    <view class="privacy-name">
+      <text>个人信息第三方共享清单</text>
+    </view>
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png" />
+    </view>
+  </view>
+  <view class="privacy privacy4" bind:tap="toPrivacy4">
+    <view class="privacy-name">
+      <text>登录政策</text>
+    </view>
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png" />
+    </view>
+  </view>
+
+
+</view>

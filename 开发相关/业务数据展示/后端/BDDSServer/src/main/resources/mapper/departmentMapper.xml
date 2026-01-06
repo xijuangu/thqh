@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.DepartmentMapper">
+<!--    List<department> getDepartmentList();-->
+    <select id="getDepartmentList" resultType="department">
+        SELECT * FROM department
+    </select>
+
+<!--    Integer deleteDepartment(Integer id);-->
+    <delete id="deleteDepartment">
+        DELETE FROM department WHERE id = #{id}
+    </delete>
+
+<!--    Integer insertDepartment(department deptInfo);-->
+    <insert id="insertDepartment">
+        INSERT INTO department (department_name, department_code) VALUES (#{deptInfo.department_name}, #{deptInfo.department_code})
+    </insert>
+
+<!--    Integer updateDepartment(department deptInfo);-->
+    <update id="updateDepartment">
+        UPDATE department SET department_name = #{deptInfo.department_name}, department_code = #{deptInfo.department_code} WHERE id = #{deptInfo.id}
+    </update>
+
+</mapper>

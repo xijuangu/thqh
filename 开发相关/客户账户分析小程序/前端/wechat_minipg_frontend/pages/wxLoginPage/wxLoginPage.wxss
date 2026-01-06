@@ -1,0 +1,325 @@
+/* pages/wxLoginPage/wxLoginPage.wxss */
+
+.background-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.shape {
+  position: absolute;
+  filter: blur(30px);
+}
+
+.shape-1 {
+  width: 180px;
+  height: 180px;
+  background-color: #ffbfc1;
+  border-radius: 50%;
+  top: 70%;
+  left: 10%;
+  opacity: 0.9;
+}
+
+.shape-2 {
+  width: 230px;
+  height: 230px;
+  background-color: #b5face;
+  transform: rotate(150deg);
+  /* 旋转45度 */
+  bottom: 20%;
+  border-radius: 50%;
+
+  right: 5%;
+  opacity: 0.8;
+}
+
+.shape-3 {
+  width: 200px;
+  height: 200px;
+  background-color: #c1a7ff;
+  border-radius: 50%;
+  top: 55%;
+  left: 23%;
+  opacity: 0.8;
+}
+
+.shape-4 {
+  width: 300px;
+  height: 300px;
+  background-color: #61a8fe;
+  bottom: 30%;
+  right: 50%;
+  transform: rotate(45deg);
+  /* 旋转45度 */
+  opacity: 0.7;
+}
+
+
+
+.MainContent {
+
+  width: 100%;
+  height: 400rpx;
+
+  margin-left: 50rpx;
+  position: fixed;
+  top: 24%
+}
+
+.MainContent .content {
+  display: flex;
+  flex-direction: row;
+}
+
+.MainContent .content .companyLogo {
+  /* background-color: rgb(133, 197, 197); */
+  /* width: 160rpx;
+  height: 180rpx; */
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  margin-left: 0rpx;
+}
+
+.MainContent .content .companyLogo image {
+  width: 160rpx;
+  height: 140rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.MainContent .content .conpanyName {
+  /* background-color: rgb(230, 230, 230); */
+  width: auto;
+  height: 170rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 69rpx;
+  color: #0E6FD7;
+  font-weight: bold;
+  letter-spacing: 7rpx;
+  margin-left: 0;
+}
+
+.MainContent .welcomLine {
+  margin-left: 130rpx;
+  margin-top: 40rpx;
+  font-size: 39rpx;
+  font-weight: bold;
+  color: #307ad1;
+}
+
+.loginButton {
+  /* background-color: aqua; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  bottom: 7%;
+}
+
+.loginButton button {
+  width: 65%;
+  border-radius: 20rpx;
+  letter-spacing: 3rpx;
+}
+
+.login.fast {
+  background-color: #3e8ffe;
+  color: aliceblue;
+  margin-bottom: 30rpx;
+}
+
+.login.phone {
+  color: #3e8ffe;
+  border: solid 2rpx #3e8ffe;
+  border-radius: 0rpx;
+}
+
+
+
+/*************************************************************/
+.container .mainContent {
+  /* margin-top: 30rpx; */
+  height: 100vh;
+}
+
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 1);
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.container .bottomPop {
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  height: 650rpx;
+  transform: translateY(650rpx);
+
+  position: absolute;
+  z-index: 99;
+  bottom: 0rpx;
+  border-top-left-radius: 30rpx;
+  border-top-right-radius: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.bottomPop .topContent {
+  width: 95%;
+  height: 170rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+.bottomPop .title {
+  font-size: 44rpx;
+  font-weight: bold;
+  letter-spacing: 3rpx;
+}
+
+.bottomPop .tip {
+  font-size: 28rpx;
+  color: rgb(163, 163, 163);
+  margin-top: 10rpx;
+  letter-spacing: 3rpx;
+}
+
+
+
+
+
+
+.container .pattern1 {
+  width: 90rpx;
+  height: 100%;
+  /* background-color: yellow; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .pattern2 {
+  width: 95%;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  border-top: solid 1rpx rgb(230, 230, 230);
+}
+
+.container .pattern2.getName {
+  border-bottom: solid 1rpx rgb(230, 230, 230);
+}
+
+.getProfile .pic .avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 10rpx;
+}
+
+.getProfile .avatar-wrapper {
+  margin-left: 20rpx;
+  border: solid 0rpx rgb(240, 240, 240);
+  font-size: 33rpx;
+  letter-spacing: 2rpx;
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+
+}
+
+.container .pattern2.getProfile button {
+  background: none !important;
+  color: #000 !important;
+  padding-left: 0;
+
+
+}
+
+.container .pattern2.getProfile button::after {
+  border: none;
+}
+
+.container .getName text {
+  font-size: 33rpx;
+  letter-spacing: 2rpx;
+}
+
+.container .getName input {
+  font-size: 33rpx;
+  margin-left: 20rpx;
+  letter-spacing: 2rpx;
+}
+
+.container .operationBtn {
+  display: flex;
+  justify-content: space-between;
+  width: 65%;
+  /* background-color: violet; */
+  margin-top: 38rpx;
+}
+
+.operationBtn .btn {
+  /* background-color: yellow; */
+  width: 230rpx;
+  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 33rpx;
+  letter-spacing: 2rpx;
+  border-radius: 10rpx;
+  background-color: rgb(240, 240, 240);
+
+}
+
+.operationBtn .btn.close {
+  color: rgb(0, 202, 0);
+}
+
+.operationBtn .btn.submit {
+  color: rgb(0, 202, 0);
+}
+
+.operationBtn .btn.submit.disable {
+  color: rgb(197, 197, 197);
+}
+
+.privacyAuth-container {
+  width: 85%;
+
+  margin-top: 220rpx
+}
+
+.privacyAuth-container .wx-checkbox-input {
+  border-radius: 50%;
+  height: 28rpx;
+  width: 28rpx;
+}
+
+.privacyAuth-container .active .wx-checkbox-input {
+  background-color: #3e8ffe;
+}
+
+.privacyAuth-container .active .wx-checkbox-input.wx-checkbox-input-checked:before {
+  color: white;
+  font-size: 25rpx;
+}

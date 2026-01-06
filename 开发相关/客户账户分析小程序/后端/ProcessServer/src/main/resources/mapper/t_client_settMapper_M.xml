@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_client_settMapper_M">
+<!--    t_client_sett getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_client_sett">
+        select * from T_CLIENT_SETT where id = #{id}
+    </select>
+<!--    List<t_client_sett> getAll(@Param("id1")int id1,@Param("id2")int id2);-->
+    <select id="getAll" resultType="org.example.processserver.pojo.t_client_sett">
+        select * from T_CLIENT_SETT where id in (SELECT id FROM (SELECT id FROM T_CLIENT_SETT where id BETWEEN #{id1} and #{id2}) AS temp)
+    </select>
+
+
+<!--    List<t_client_sett> getIncrement(@Param("startDate")String startDate,@Param("endDate")String endDate);-->
+    <select id="getIncrement" resultType="org.example.processserver.pojo.t_client_sett">
+        select * from T_CLIENT_SETT where busi_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+
+
+
+    <!--    int deleteFrom_TCS_encrypt_temp();-->
+    <delete id="deleteFrom_TCS_encrypt_temp">
+        TRUNCATE TCS_encrypt_temp
+    </delete>
+
+    <!--    List<String> TCS_B_getDistinct();-->
+    <select id="TCS_B_getDistinct" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT fund_account_id,client_id from T_CLIENT_SETT where encrypt_lable = 1
+    </select>
+
+    <!--    -->
+    <insert id="insertInto_TCS_encrypt_temp">
+        insert into TCS_encrypt_temp(TCS_B_fundaccountId,TCS_A_fundaccountId,TCS_B_clientId,TCS_A_clientId) values(#{TCS_B_fundaccountId},#{TCS_A_fundaccountId},#{TCS_B_clientId},#{TCS_A_clientId})
+    </insert>
+
+
+<!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_CLIENT_SETT
+    </select>
+    <!--   int Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_CLIENT_SETT where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+<!--    int update_SyncStateTable(int syncResult);-->
+    <update id="update_SyncStateTable">
+        UPDATE T_CLIENT_SETT SET syncstate = #{syncResult} WHERE id = 1
+    </update>
+
+<!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+
+        UPDATE T_CLIENT_SETT A INNER JOIN TCS_encrypt_temp B ON A.fund_account_id = B.TCS_B_fundaccountId and A.client_id = B.TCS_B_clientId SET A.fund_account_id=B.TCS_A_fundaccountId,A.client_id=B.TCS_A_clientId,encrypt_lable=0 WHERE encrypt_lable=1 AND A.id  between #{id1} and #{id2}
+<!--        IN (SELECT id FROM (SELECT id FROM T_CLIENT_SETT where id BETWEEN #{id1} and #{id2}) AS temp);-->
+    </update>
+
+<!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_CLIENT_SETT A inner join TCS_encrypt_temp B ON A.fund_account_id = B.TCS_B_fundaccountId and A.client_id = B.TCS_B_clientId SET A.fund_account_id=B.TCS_A_fundaccountId,A.client_id=B.TCS_A_clientId,A.encrypt_lable=1 where A.id in (select id from (select id from T_CLIENT_SETT where encrypt_lable=0) AS temp)
+    </update>
+
+
+
+
+
+
+
+
+</mapper>

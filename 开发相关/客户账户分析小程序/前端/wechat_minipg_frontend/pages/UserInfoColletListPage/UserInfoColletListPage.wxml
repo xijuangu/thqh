@@ -1,0 +1,53 @@
+<!--pages/UserInfoColletListPage/UserInfoColletListPage.wxml-->
+<topNev title="个人信息收集清单" barOperation="{{barOperation}}"  privacyAuthInfo = "" privacyAuthShow="{{privacyAuthShow}}" show_background_color = "show_background_color" style="position: fixed;z-index: 90;"></topNev>
+ 
+<view class="policy-container" style="position: absolute; z-index: 80; margin-top: 180rpx;padding: 10px;">
+  <view class="mainTitle" style="width: 100%; height: 100rpx;  display: flex; align-items: center;justify-content: center;font-size: 36rpx; font-weight: 800;">
+    <text>个人信息收集清单</text>
+  </view>
+
+  <view class="info" style=" margin-bottom: 10rpx ;">
+    <text>为保障产品或服务的实现与安全稳定运行的目的，我们会按照合法、正当、必要的原则收集您的个人信息：</text>
+  </view>
+
+  <view class="policy" >
+    <text class="title" >（一） 用户授权登录
+    
+    </text>
+
+    <text class="title">1） 微信号授权登录
+    </text>
+
+    <text class="content">收集的信息：</text>
+    <text class="content" style="font-weight: 600;">微信昵称、头像；微信账号唯一标识openid</text>
+    <text class="content">。
+    </text>
+
+    <text class="content">收集的目的：实现微信账号快速授权登录，建立用户与小程序的关联身份，并用于小程序前台功能主页以及个人资料页的用户信息展示。
+    
+    </text>
+  
+
+    <text class="title">2） 手机号授权登录
+    </text>
+
+    <text class="content">收集的信息：</text>
+    <text class="content" style="font-weight: 600;">用户手机号</text>
+    <text class="content">。
+    </text>
+
+    <text class="content">收集的目的：实现手机号快速验证登录，建立用户与客户账户分析小程序的关联身份，脱敏后的手机号（除前三位与后四位，其余均以掩码代替）用于小程序前台功能主页以及个人资料页作为用户名展示。</text>
+
+  
+  </view>
+
+  <view class="policy" >
+    <text class="title">（二） 账号管理
+    </text>
+    <text class="content">收集的信息：</text>
+    <text class="content" style="font-weight: 600;">交易账号、交易密码
+    </text>
+    <text class="content">收集目的：完成绑定/解绑交易账号</text>
+  </view>
+
+</view>

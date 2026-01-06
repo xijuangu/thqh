@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.ChatMessageUserMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ChatMessageUserResultMap" type="com.thqh.enterprise_wechat_backend.entity.ChatMessageUser">
+        <id property="id" column="id"/>
+        <result property="msgid" column="msgid"/>
+        <result property="fromUser" column="from_user"/>
+        <result property="toUser" column="to_user"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+
+    <!-- 批量插入 chat_message_user 表 -->
+    <insert id="batchInsertChatMessageUsers" parameterType="java.util.List">
+        INSERT INTO chat_message_user (msgid, from_user, to_user)
+        VALUES
+        <foreach collection="list" item="chatMessageUser" separator=",">
+            (#{chatMessageUser.msgid}, #{chatMessageUser.fromUser}, #{chatMessageUser.toUser})
+        </foreach>
+    </insert>
+
+
+</mapper>

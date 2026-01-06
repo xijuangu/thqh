@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_fund_jourMapper_M">
+    <!--   t_fund_jour getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_fund_jour">
+        select * from T_FUND_JOUR where id = #{id}
+    </select>
+
+    <!--    int delete_TFJ_encrypt_temp(); //增量加密处理&#45;&#45;清空临时表-->
+    <delete id="delete_TFJ_encrypt_temp">
+        TRUNCATE TFJ_encrypt_temp
+    </delete>
+
+    <!--    List<encrypt_field> TFJ_encrypt_field(); //增量加密处理&#45;&#45;获取临时表的不重复数据-->
+    <select id="TFJ_encrypt_field" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT client_id,fund_account_id from T_FUND_JOUR where encrypt_lable = 0
+    </select>
+
+    <!--    int insertInto_TFJ_encrypt_temp(-->
+    <!--    @Param("TFJ_B_clientId")String TFJ_B_clientId,-->
+    <!--    @Param("TFJ_A_clientId")String TFJ_A_clientId,-->
+    <!--    @Param("TFJ_B_fundaccountId")String TFJ_B_fundaccountId,-->
+    <!--    @Param("TFJ_A_fundaccountId")String TFJ_A_fundaccountId);-->
+    <insert id="insertInto_TFJ_encrypt_temp">
+        insert into TFJ_encrypt_temp(TFJ_B_clientId,TFJ_A_clientId,TFJ_B_fundaccountId,TFJ_A_fundaccountId)
+        values(#{TFJ_B_clientId},#{TFJ_A_clientId},#{TFJ_B_fundaccountId},#{TFJ_A_fundaccountId})
+    </insert>
+
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_FUND_JOUR
+    </select>
+
+    <!--    int Increment_getCount();//增量加密处理&#45;&#45;获取增量数据条数-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_FUND_JOUR where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_FUND_JOUR A INNER JOIN TFJ_encrypt_temp B ON A.fund_account_id = B.TFJ_B_fundaccountId and A.client_id
+        = B.TFJ_B_clientId SET A.fund_account_id=B.TFJ_A_fundaccountId, A.client_id=B.TFJ_A_clientId,encrypt_lable=1
+        WHERE A.id IN (SELECT id FROM (SELECT id FROM T_FUND_JOUR where id BETWEEN #{id1} and #{id2}) AS temp)
+    </update>
+
+    <!--    void overWrite_increment(); //增量加密处理&#45;&#45;覆写增量数据-->
+    <update id="overWrite_increment">
+        UPDATE T_FUND_JOUR A inner join TFJ_encrypt_temp B ON A.fund_account_id = B.TFJ_B_fundaccountId and A.client_id
+        = B.TFJ_B_clientId SET A.fund_account_id=B.TFJ_A_fundaccountId,A.client_id=B.TFJ_A_clientId,A.encrypt_lable=1
+        where A.id in (select id from (select id from T_FUND_JOUR where encrypt_lable=0) AS temp)
+    </update>
+
+
+</mapper>

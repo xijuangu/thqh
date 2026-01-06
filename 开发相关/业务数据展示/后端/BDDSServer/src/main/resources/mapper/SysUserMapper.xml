@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.SysUserMapper">
+<!--            Integer validateUser(@Param("username") String username,@Param("password") String password);-->
+    <select id="validateUser" resultType="com.org.bddsserver.pojo.sysUser">
+        SELECT * FROM sysuser WHERE sysuser_name = #{username} and sysuser_pwd = #{password}
+    </select>
+
+<!--    SysUserList getUserDetailInfo(Integer userId);-->
+    <select id="getUserDetailInfo" resultType="com.org.bddsserver.dto.SysUserList">
+            SELECT * FROM sysuser WHERE id = #{userId}
+    </select>
+
+    <!--    List<sysUser> getAllUser();-->
+    <select id="getAllUser" resultType="com.org.bddsserver.pojo.sysUser">
+        SELECT * FROM sysuser
+    </select>
+
+<!--        Integer changeActivateStatusByUserId(@Param("sysUserId") Integer sysUserId, @Param("activateStatus") String activateStatus);-->
+    <update id="changeActivateStatusByUserId">
+            UPDATE sysuser SET activate_status = #{activateStatus} WHERE id = #{sysUserId}
+    </update>
+
+<!--    Integer deleteSysUserByUserId(Integer sysUserId);-->
+    <delete id="deleteSysUserByUserId">
+        DELETE FROM sysuser WHERE id = #{sysUserId}
+    </delete>
+
+<!--    Integer changePasswordByUserId(@Param("sysUserId") Integer sysUserId,@Param("sysUserPassword") String sysUserPassword);-->
+    <update id="changePasswordByUserId">
+        UPDATE sysuser SET sysuser_pwd = #{sysUserPassword} WHERE id = #{sysUserId}
+    </update>
+
+<!--    Integer getnew_sysuser_id_by_name(@Param("sysuserName") String sysuserName);-->
+    <select id="getnew_sysuser_id_by_name" resultType="Integer">
+            SELECT id FROM sysuser WHERE sysuser_name = #{sysuserName}
+    </select>
+
+<!--    Integer addSysUser(@Param("sysuserName") String sysuserName,@Param("sysuserPwd") String sysuserPwd,@Param("createAt") String createAt,@Param("updateAt") String updateAt,@Param("sysuserRealName") String sysuserRealName,@Param("activateStatus") String activateStatus);-->
+    <insert id="addSysUser">
+        INSERT INTO sysuser(sysuser_name,sysuser_pwd,create_at,update_at,sysuser_real_name,activate_status)
+        VALUES(#{sysuserName},#{sysuserPwd},#{createAt},#{updateAt},#{sysuserRealName},#{activateStatus})
+    </insert>
+
+<!--    Integer deleteSysUserBatch(List<Integer> deleteIdList);-->
+    <delete id="deleteSysUserBatch">
+        DELETE FROM sysuser WHERE id IN
+        <foreach collection="deleteIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+<!--    void updateLastLoginTime(Integer id, String lastLoginTime);-->
+    <update id="updateLastLoginTime">
+        UPDATE sysuser SET last_login_time = #{lastLoginTime} WHERE id = #{id}
+    </update>
+</mapper>

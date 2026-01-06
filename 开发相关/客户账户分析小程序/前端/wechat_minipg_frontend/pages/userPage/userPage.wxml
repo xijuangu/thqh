@@ -1,0 +1,46 @@
+<!--pages/userPage/userPage.wxml-->
+<topNev title="个人资料"  barOperation="1" show_background_color = "show_background_color" ></topNev>
+<view class="container">
+  <view class="profile">
+    <view class="content1 contentText">
+      <text>头像</text>
+    </view>
+    <view class="profilePic">
+      <image src="{{avatarUrl}}" />
+    </view>
+  </view>
+  <view class="name">
+    <view class="content2 contentText">
+      <text>昵称</text>
+    </view>
+    <view class="userName">
+      <text>{{userName}}</text>
+    </view>
+  </view>
+  <view class="tradeCountLogin" bind:tap="tradeCountLogin">
+    <view class="content3 contentText">
+      <text>交易账号登录</text>
+    </view>
+    <view class="tradeAccountLoginState">
+      <text>{{tradeAccountLoginStateContent}}</text>
+    </view>
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png"/>
+    </view>
+  </view>
+
+  <view class="privacy" bind:tap="toPrivacy">
+    <view class="content4 contentText">
+      <text>隐私与协议</text>
+    </view>
+    <view class="jumpArrow">
+      <image src="/pages/images/前进箭头.png"/>
+    </view>
+  </view>
+  
+  <view class="logout">
+    <button class="logoutbtn" bind:tap="logout">
+      退出登录
+    </button>
+  </view>
+</view>

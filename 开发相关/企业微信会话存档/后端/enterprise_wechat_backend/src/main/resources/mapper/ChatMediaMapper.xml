@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.ChatMediaMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ChatMediaResultMap" type="com.thqh.enterprise_wechat_backend.entity.ChatMedia">
+        <id property="id" column="id"/>
+        <result property="msgid" column="msgid"/>
+        <result property="sdkfileid" column="sdkfileid"/>
+        <result property="mediaType" column="mediatype"/>
+        <result property="md5Sum" column="md5sum"/>
+        <result property="mediaSize" column="media_size"/>
+        <result property="playLength" column="play_length"/>
+        <result property="mediaName" column="media_name"/>
+        <result property="width" column="width"/>
+        <result property="height" column="height"/>
+        <result property="type" column="type"/>
+        <result property="downloadUrl" column="download_url"/>
+        <result property="downloadStatus" column="download_status"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <select id="selectBySdkfileid" resultMap="ChatMediaResultMap">
+        SELECT * FROM chat_media WHERE sdkfileid = #{sdkfileid}
+    </select>
+
+
+</mapper>

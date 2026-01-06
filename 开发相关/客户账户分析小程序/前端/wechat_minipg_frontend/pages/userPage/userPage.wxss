@@ -1,0 +1,151 @@
+/* pages/userPage/userPage.wxss */
+page {
+  background-color: rgb(241, 241, 241);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  /* background-color: rgb(118, 235, 235); */
+  position: relative;
+}
+
+.profile {
+  width: 100%;
+  height: 160rpx;
+  background-color: rgb(255, 255, 255);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile .content1 {
+  width: 80%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.contentText text {
+  margin-left: 40rpx;
+}
+
+.profile .profilePic {
+  width: 120rpx;
+  height: 120rpx;
+  /* background-color: rgb(133, 103, 103); */
+  position: absolute;
+  right: 35rpx;
+  border-radius: 50%;
+  border: solid 1rpx rgb(122, 122, 122);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile .profilePic image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+
+}
+
+.name {
+  width: 100%;
+  height: 120rpx;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  border-top: solid 1rpx rgb(173, 173, 173);
+}
+
+.name .content2 {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.name .userName {
+  position: absolute;
+  right: 40rpx;
+}
+
+.tradeCountLogin {
+  display: flex;
+  flex-direction: row;
+  height: 120rpx;
+  width: 100%;
+  background-color: white;
+  border-top: solid 1rpx rgb(173, 173, 173);
+}
+
+.tradeCountLogin .content3 {
+  width: 590rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.tradeCountLogin .tradeAccountLoginState {
+  width: 120rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-self: center;
+  /* background-color: rgb(102, 38, 102); */
+}
+
+.tradeCountLogin .jumpArrow {
+  width: 60rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* background-color: violet; */
+}
+
+.tradeCountLogin .jumpArrow image {
+  width:26px;
+  height: 26px;
+}
+
+
+.privacy {
+  display: flex;
+  flex-direction: row;
+  height: 120rpx;
+  width: 100%;
+  background-color: white;
+  border-top: solid 1rpx rgb(173, 173, 173);
+}
+
+.privacy .content4 {
+  width: 710rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.privacy .jumpArrow {
+  width: 60rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* background-color: violet; */
+}
+
+.privacy .jumpArrow image {
+  width: 26px;
+  height: 26px;
+}
+
+
+
+.logout .logoutbtn{
+  border-radius: 50rpx;
+  background-color: #4e9af1;
+  margin-top: 40rpx;
+  width: 370rpx;
+  color: white;
+}

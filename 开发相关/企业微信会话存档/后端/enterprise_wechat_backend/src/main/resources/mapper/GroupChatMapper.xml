@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.GroupChatMapper">
+    <!-- 结果映射 -->
+    <resultMap id="GroupChatResultMap" type="com.thqh.enterprise_wechat_backend.entity.GroupChat">
+        <id property="id" column="id"/>
+        <result property="chatId" column="chat_id"/>
+        <result property="chatType" column="chat_type"/>
+        <result property="name" column="name"/>
+        <result property="owner" column="owner"/>
+        <result property="createTime" column="create_time"/>
+        <result property="notice" column="notice"/>
+        <result property="adminList" column="admin_list"/>
+        <result property="memberVersion" column="member_version"/>
+        <result property="status" column="status"/>
+<!--        <result property="errorLog" column="error_log"/>-->
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <!-- 先将所有群聊记录标记为失效 -->
+    <update id="markAllGroupChatsInactive">
+        UPDATE group_chat SET status = 1
+    </update>
+
+    <!-- 批量合并群聊主表数据：
+         接收一个 GroupChat 的列表，利用 chat_id 判断记录是否存在，存在则更新，不存在则插入 -->
+    <insert id="batchMergeGroupChats" parameterType="java.util.List">
+        INSERT INTO group_chat (chat_id, chat_type, name, owner, create_time, notice, member_version,admin_list,status,error_log)
+        VALUES
+        <foreach collection="list" item="gc" separator=",">
+            (#{gc.chatId}, #{gc.chatType}, #{gc.name}, #{gc.owner}, #{gc.createTime}, #{gc.notice}, #{gc.memberVersion},#{gc.adminList},#{gc.status},#{gc.errorLog})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        chat_type = VALUES(chat_type),
+        name = VALUES(name),
+        owner = VALUES(owner),
+        create_time = VALUES(create_time),
+        notice = VALUES(notice),
+        member_version = VALUES(member_version),
+        admin_list = VALUES(admin_list),
+        status = VALUES(status),
+        error_log = VALUES(error_log)
+    </insert>
+
+    <!-- 先将所有群成员记录标记为失效 -->
+    <update id="markAllGroupChatMembersInactive">
+        UPDATE group_chat_member SET status = 1
+    </update>
+
+
+    <!-- 批量合并群成员数据：根据联合唯一键 (chat_id, userid) 判断记录是否存在，存在则更新，不存在则插入 -->
+    <insert id="batchMergeGroupChatMembers" parameterType="java.util.List">
+        INSERT INTO group_chat_member
+        (chat_id, userid, type, join_time, join_scene, invitor_userid, group_nickname, member_name, is_admin, status)
+        VALUES
+        <foreach collection="list" item="m" separator=",">
+            (#{m.chatId}, #{m.userid}, #{m.type}, #{m.joinTime}, #{m.joinScene}, #{m.invitorUserid}, #{m.groupNickname}, #{m.memberName}, #{m.isAdmin}, #{m.status})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        type = VALUES(type),
+        join_time = VALUES(join_time),
+        join_scene = VALUES(join_scene),
+        invitor_userid = VALUES(invitor_userid),
+        group_nickname = VALUES(group_nickname),
+        member_name = VALUES(member_name),
+        is_admin = VALUES(is_admin),
+        status = VALUES(status)
+    </insert>
+
+
+    <!-- 批量处理拉取失败群聊主表数据：
+            接收一个 GroupChat 的列表，利用 chat_id 判断记录是否存在，存在则更新，不存在则插入 -->
+    <insert id="batchMergeErrorGroupChats" parameterType="java.util.List">
+        INSERT INTO group_chat (chat_id,error_log)
+        VALUES
+        <foreach collection="list" item="gc" separator=",">
+            (#{gc.chatId}, #{gc.errorLog})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        error_log = VALUES(error_log)
+    </insert>
+
+
+    <select id="getGroupChatsByPage" resultType="com.thqh.enterprise_wechat_backend.entity.GroupChat">
+        SELECT id, chat_id ,chat_type , name, owner, create_time, notice, admin_list, member_version, status
+        FROM group_chat
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,124 @@
+<view class="container">
+  <second title="账户分析功能" barOperation="0"></second>
+
+  <view class="top">
+    <view class="top-left">
+      <view class="profileBox" bind:tap="toUserPage">
+        <image class="profile" src="{{avatarUrl}}" />
+      </view>
+      <view class="{{tradeAccountStateMark}}">{{tradeAccountStateMarkContent}}</view>
+    </view>
+    <view class="top-right">
+      <view class="welcomeLine1">
+        <text class="conntent01">您好，用户</text>
+        <text class="conntent02">{{displayUserName}}</text>
+      </view>
+      <text class="welcomeLine2">欢迎使用账户分析平台</text>
+    </view>
+
+  </view>
+
+  <view class="functionList">
+    <!-- 账户资金分析 -->
+    <view class="function1" bind:tap="function1OnClick">
+      <view class="icon icon1">
+        <image src="/pages/images/钱包 .png" />
+      </view>
+      <view class="description">
+        <text class="title">账户资金分析</text>
+        <text class="detail">提供指定期间内交易账户的权益、盈利、交易胜率、收益率等关键数据的统计与查询。</text>
+      </view>
+      <view class="jumpArrow">
+        <image src="/pages/images/jumpArrow.png" />
+      </view>
+    </view>
+
+    <!-- 品种交易偏好分析 -->
+    <view class="function function2" bind:tap="function2OnClick">
+      <view class="icon icon2">
+        <image src="/pages/images/饼图.png" />
+      </view>
+      <view class="description">
+        <text class="title">品种交易偏好分析</text>
+        <text class="detail">提供指定期间内各交易品种的成交量、成交额、盈亏、净利润等关键数据的统计与查询。</text>
+      </view>
+      <view class="jumpArrow">
+        <image src="/pages/images/jumpArrow.png" />
+      </view>
+    </view>
+
+    <!-- 风险度分析 -->
+    <view class="function function3" bind:tap="function3OnClick">
+      <view class="icon icon3">
+        <image src="/pages/images/柱状图.png" />
+      </view>
+      <view class="description">
+        <text class="title">风险度分析</text>
+        <text class="detail">提供指定期间内各交易日风险度柱状图的展示与查询。</text>
+      </view>
+      <view class="jumpArrow">
+        <image src="/pages/images/jumpArrow.png" />
+      </view>
+    </view>
+
+    <!-- 趋势分析 -->
+    <view class="function function4" bind:tap="function4OnClick">
+      <view class="icon icon3">
+        <image src="/pages/images/曲线图.png" />
+      </view>
+      <view class="description">
+        <text class="title">趋势分析</text>
+        <text class="detail">提供特定期间的市值权益曲线、累计收益率曲线、回撤率曲线的变化趋势查询</text>
+      </view>
+      <view class="jumpArrow">
+        <image src="/pages/images/jumpArrow.png" />
+      </view>
+    </view>
+
+
+  </view>
+
+
+  <!-- 重要声明弹窗提示 -->
+  <view class="disclaimer" wx:if="{{disclaimer_show == 'show'}}">
+    <text class="disclaimer-title">重要声明</text>
+    <text class="disclaimer-text">本账户分析平台的所有分析功能所提供的所有账户分析数据不构成投资建议，不代表通惠期货观点。</text>
+    <text class="disclaimer-text">通惠期货对信息的准确性和完整性不作保证，不承诺所包含的信息不会发生变更。</text>
+    <text class="disclaimer-text">所有分析功能中所展示的任何观点及结论仅供参考，任何据此做出的投资决策与通惠期货无关。</text>
+    <text class="disclaimer-text">您的历史业绩表现不代表未来预期收益，期货市场投资有风险，决策须谨慎。</text>
+    <button class="disclaimer-button" bind:tap="disclaimer_cancleOnClick">我已知晓</button>
+  </view>
+
+  <!-- 功能页重要声明 -->
+  <view class="disclaimer-static">
+  <text class="disclaimer-static-title">重要声明:</text>
+  <text class="disclaimer-static-text">本账户分析平台的所有分析功能所提供的所有账户分析数据不构成投资建议，不代表通惠期货观点。通惠期货对信息的准确性和完整性不作保证，不承诺所包含的信息不会发生变更。所有分析功能中所展示的任何观点及结论仅供参考，任何据此做出的投资决策与通惠期货无关。您的历史业绩表现不代表未来预期收益，期货市场投资有风险，决策须谨慎。</text>
+  </view>
+
+
+
+
+
+
+  <!-- 屏幕变暗遮罩 -->
+
+  <view class="container-Mask" wx:if="{{show == 'show'}}">
+    <!-- animation="{{animation_popWindow}}" -->
+    <view class="screenMaskON" animation="{{animation_screenMaskON}}"></view>
+
+    <view class="popWindow" animation="{{animation_popWindow}}" wx:if="{{menu_show == 'show'}}">
+      <view class="indicateText">- 请选择分析项目 -</view>
+
+      <view class="chooseBox">
+        <view class="subfunction subfunction1" bind:tap="SubFunction1OnClick">市值权益曲线</view>
+        <view class="subfunction subfunction2" bind:tap="SubFunction2OnClick">累计收益率曲线</view>
+        <view class="subfunction subfunction3" bind:tap="SubFunction3OnClick">回撤率曲线</view>
+      </view>
+
+      <view class="cancle" bind:tap="cancleOnClick">取消</view>
+
+    </view>
+  </view>
+
+
+</view>

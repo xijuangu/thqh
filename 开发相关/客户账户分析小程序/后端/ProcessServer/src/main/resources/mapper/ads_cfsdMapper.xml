@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.ads_csfdMapper">
+    <!--     int insertList_ads_cfsd(List<Object> ads_cfsd_list);-->
+    <insert id="insertList_ads_cfsd">
+        insert into ads_futures_client_finance_status_detail values
+        <foreach collection="ads_cfsd_list" item="ads" separator=",">
+            (#{ads.client_id},#{ads.busi_date},#{ads.yes_rights},#{ads.rights},#{ads.market_deposit},#{ads.trading_profit_and_loss},#{ads.charge},#{ads.net_deposit},#{ads.opt_premium_income},#{ads.opt_premium_pay},#{ads.profit_days},#{ads.loss_days},#{ads.turnover},#{ads.risk_level},#{ads.today_net_value},#{ads.trade_day_flag})
+        </foreach>
+    </insert>
+
+<!--    void truncate_ads_cfsd();-->
+    <delete id="truncate_ads_cfsd">
+        truncate table ads_futures_client_finance_status_detail
+    </delete>
+
+
+
+</mapper>

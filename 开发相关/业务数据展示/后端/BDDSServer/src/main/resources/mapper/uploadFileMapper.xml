@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.uploadFileMapper">
+<!--    public int insertFileDataList(@Param("uploadFileDataList")List<UploadFileData> uploadFileDataList);-->
+    <insert id="insertFileDataList">
+        INSERT INTO client_class_info (
+            class_code,
+            class_name,
+            sub_code,
+            sub_name,
+            remark,
+            personnel_code
+        )
+        VALUES
+        <foreach collection="uploadFileDataList" item="uploadFileData" separator=",">
+            (#{uploadFileData.class_code}, #{uploadFileData.class_name}, #{uploadFileData.sub_code}, #{uploadFileData.sub_name}, #{uploadFileData.remark}, #{uploadFileData.personnel_code})
+        </foreach>
+    </insert>
+
+<!--    int truncateFileData();-->
+    <delete id="truncateFileData">
+            TRUNCATE TABLE client_class_info
+    </delete>
+
+</mapper>

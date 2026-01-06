@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.enterprise_wechat_backend.mapper.ChatDataMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ChatDataResultMap" type="com.thqh.enterprise_wechat_backend.entity.ChatData">
+        <id property="id" column="id"/>
+        <result property="seq" column="seq"/>
+        <result property="msgid" column="msgid"/>
+        <result property="publickeyVer" column="publickey_ver"/>
+        <result property="encryptRandomKey" column="encrypt_random_key"/>
+        <result property="encryptChatMsg" column="encrypt_chat_msg"/>
+        <result property="decryptFlag" column="decrypt_flag"/>
+        <result property="generateMsgFlag" column="generate_msg_flag"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+
+    <select id="selectByDecryptFlag" parameterType="int" resultMap="ChatDataResultMap">
+        SELECT *
+        FROM chat_data
+        WHERE decrypt_flag = #{decryptFlag}
+    </select>
+
+    <select id="selectByGenerateMsgFlag" parameterType="int" resultMap="ChatDataResultMap">
+        SELECT *
+        FROM chat_data
+        WHERE generate_msg_flag = #{generateMsgFlag}
+    </select>
+
+
+    <select id="selectNoGeneratedMsg" parameterType="int" resultMap="ChatDataResultMap">
+        SELECT *
+        FROM chat_data
+        WHERE generate_msg_flag != 1
+    </select>
+
+
+</mapper>

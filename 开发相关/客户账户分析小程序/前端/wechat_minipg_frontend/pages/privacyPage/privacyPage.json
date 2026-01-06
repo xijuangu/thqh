@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "topNev" : "/components/topNev/topNev"
+  },
+  "component": true
+}

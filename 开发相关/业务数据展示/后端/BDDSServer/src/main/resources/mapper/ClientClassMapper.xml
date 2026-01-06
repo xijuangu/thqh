@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.ClientClassMapper">
+    <select id="selectAll" resultType="com.org.bddsserver.pojo.ClientClassInfo">
+        select a.*,b.personnel_name from client_class_info a left join personnel b on a.personnel_code =
+        b.personnel_code
+    </select>
+
+    <insert id="insertOne">
+        insert into client_class_info(class_code,class_name,sub_code,sub_name,remark,personnel_code)
+        values(#{clientClassInfo.class_code},#{clientClassInfo.class_name},#{clientClassInfo.sub_code},#{clientClassInfo.sub_name},#{clientClassInfo.remark},
+        CASE
+        WHEN #{clientClassInfo.personnel_code} = 'none' THEN NULL
+        ELSE #{clientClassInfo.personnel_code}
+        END)
+    </insert>
+
+
+    <delete id="deleteById">
+        delete from client_class_info where id = #{id}
+    </delete>
+
+    <update id="updateById">
+        update client_class_info set
+        id = #{clientClassInfo.id},
+        class_code = #{clientClassInfo.class_code},
+        class_name = #{clientClassInfo.class_name},
+        sub_code = #{clientClassInfo.sub_code},
+        sub_name = #{clientClassInfo.sub_name},
+        personnel_code = CASE WHEN #{clientClassInfo.personnel_code} = 'none' THEN NULL ELSE #{clientClassInfo.personnel_code} END,
+        remark = #{clientClassInfo.remark}
+        where id = #{clientClassInfo.id}
+    </update>
+
+
+</mapper>

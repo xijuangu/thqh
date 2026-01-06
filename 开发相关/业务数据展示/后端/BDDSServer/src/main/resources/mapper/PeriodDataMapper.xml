@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.org.bddsserver.mapper.PeriodDataMapper">
+    <!--    Integer queryTradeFlagByDate(@Param("date") String date);-->
+    <select id="queryTradeFlagByDate" resultType="Integer">
+        select trade_flag from T_PUB_DATE where BUSI_DATE = #{date}
+    </select>
+
+    <!--    String queryLastTradeDate(@Param("date") String date);-->
+    <select id="queryLastTradeDate" resultType="String">
+        select MAX(BUSI_DATE) from T_PUB_DATE where BUSI_DATE &lt; #{date} and trade_flag = 1 LIMIT 1
+    </select>
+
+    <!--    Integer queryTradeDayCount(@Param("start_date") String start_date, @Param("end_date") String end_date);-->
+    <select id="queryTradeDayCount" resultType="Integer">
+        SELECT COUNT(*) AS days
+        FROM T_PUB_DATE A
+        WHERE A.BUSI_DATE BETWEEN #{start_date} and #{end_date}
+        AND A.TRADE_FLAG = 1
+    </select>
+
+
+    <!-- Integer queryNewCustomerCount(@Param("clientIdList") String[] clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryNewCustomerCount" resultType="Integer">
+        SELECT count(*) FROM (SELECT CLIENT_ID FROM T_CLIENT
+        WHERE
+        client_id in
+        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+        AND
+        open_date BETWEEN #{start_date} and #{end_date})a
+
+    </select>
+
+    <!--    Integer queryTotalCustomerCount(@Param("clientIdList") String[] clientIdList,@Param("end_date") String end_date);-->
+    <select id="queryTotalCustomerCount" resultType="Integer">
+        SELECT count(*) FROM (SELECT CLIENT_ID FROM T_CLIENT
+        WHERE
+        client_id in
+        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+<!--        AND-->
+<!--        OPEN_DATE &lt;= #{end_date}-->
+        )a
+
+        <!--        SELECT count(*) FROM (SELECT CLIENT_ID FROM T_CLIENT-->
+        <!--        WHERE-->
+        <!--        client_id in-->
+        <!--        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">-->
+        <!--            #{clientId}-->
+        <!--        </foreach>-->
+        <!--        )a-->
+
+        <!--        SELECT count(*) FROM (-->
+        <!--        SELECT CLIENT_ID FROM T_CLIENT-->
+        <!--        WHERE-->
+        <!--        client_id in-->
+        <!--        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">-->
+        <!--            #{clientId}-->
+        <!--        </foreach>-->
+        <!--        AND-->
+        <!--        CASE-->
+        <!--        WHEN IS_ACTIVE = 3 THEN-->
+        <!--        OPEN_DATE &lt;= #{end_date} AND CLOSE_DATE &gt; #{end_date}-->
+        <!--        ELSE-->
+        <!--        OPEN_DATE &lt;= #{end_date}-->
+        <!--        END = 1-->
+        <!--        ) a-->
+    </select>
+
+    <!--    Double queryAvgEquityDaily(@Param("clientIdList") String[] clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date,@Param("trade_day_count") Integer trade_day_count);-->
+    <select id="queryAvgEquityDaily" resultType="Double">
+        SELECT SUM(RIGHTS)/#{trade_day_count}
+        FROM T_CLIENT_SETT WHERE
+        CLIENT_ID IN
+        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+        AND
+        BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!-- Double queryInitialEquity(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date);-->
+    <select id="queryInitialEquity" resultType="Double">
+        WITH startDate1_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS startDate1_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt; #{start_date} AND TRADE_FLAG =
+        '1'
+        )
+        SELECT SUM(RIGHTS) FROM T_CLIENT_SETT where CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        BUSI_DATE = (SELECT startDate1_Fixed FROM startDate1_Fixed)
+    </select>
+
+    <!--    Double queryPreviousDayEquity(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date);-->
+    <select id="queryPreviousDayEquity" resultType="Double">
+        SELECT SUM(YES_RIGHTS) FROM T_CLIENT_SETT where CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        BUSI_DATE = #{start_date}
+    </select>
+
+
+    <!-- Double queryEndEquity(@Param("clientIdList") String clientIdList,@Param("end_date") String end_date);-->
+    <select id="queryEndEquity" resultType="Double">
+        WITH endDate1_Fixed AS (
+        SELECT MAX(BUSI_DATE) AS endDate1_Fixed FROM T_PUB_DATE WHERE BUSI_DATE &lt;= #{end_date} AND TRADE_FLAG =
+        '1'
+        )
+        SELECT SUM(RIGHTS)
+        FROM T_CLIENT_SETT WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        BUSI_DATE = (SELECT endDate1_Fixed FROM endDate1_Fixed);
+    </select>
+
+    <!-- Double queryDeposit(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryDeposit" resultType="Double">
+        SELECT SUM(A.FUND_IN)
+        FROM T_CLIENT_SETT A WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        A.BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!-- Double queryWithdrawal(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryWithdrawal" resultType="Double">
+        SELECT SUM(A.FUND_OUT)
+        FROM T_CLIENT_SETT A WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        A.BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!-- Double queryCommissionTotal(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryCommissionTotal" resultType="Double">
+        SELECT SUM(TOTAL_TRANSFEE)
+        FROM T_CLIENT_SETT A WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        A.BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!--    Double queryCommissionRetention(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryCommissionRetention" resultType="Double">
+        SELECT SUM(TOTAL_TRANSFEE)-SUM(TOTAL_MARKET_TRANSFEE)
+        FROM T_CLIENT_SETT A WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        A.BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!--    Double queryProfitTotal(@Param("clientIdList") String clientIdList,@Param("start_date") String start_date,@Param("end_date") String end_date);-->
+    <select id="queryProfitTotal" resultType="Double">
+        SELECT SUM(TODAY_PROFIT)
+        FROM T_CLIENT_SETT A WHERE
+        CLIENT_ID in
+        <foreach collection="clientIdList" item="clientCode" open="(" close=")" separator=",">
+            #{clientCode}
+        </foreach>
+        AND
+        A.BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+    <!--    PeriodDataQueryResult combineQuery(@Param("clientIdList") String[] clientIdList, @Param("start_date") String start_date, @Param("end_date") String end_date, @Param("trade_day_count") Integer trade_day_count);-->
+    <select id="combineQuery" resultType="com.org.bddsserver.dto.PeriodDataQueryResult">
+        SELECT SUM(RIGHTS)/#{trade_day_count} as avg_equity_daily,SUM(FUND_IN) as deposit,SUM(FUND_OUT) as
+        withdrawal,SUM(TOTAL_TRANSFEE) as commission_total,SUM(TOTAL_TRANSFEE)-SUM(TOTAL_MARKET_TRANSFEE) as
+        commission_retention,SUM(TODAY_PROFIT) as profit_total
+        FROM T_CLIENT_SETT WHERE
+        CLIENT_ID IN
+        <foreach collection="clientIdList" item="clientId" open="(" separator="," close=")">
+            #{clientId}
+        </foreach>
+        AND
+        BUSI_DATE BETWEEN #{start_date} and #{end_date};
+    </select>
+
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_doneMapper_M">
+    <!--   t_done getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_done">
+        select * from T_DONE where id = #{id}
+    </select>
+
+
+    <!--    int deleteFrom_TDONE_encrypt_temp();-->
+    <delete id="deleteFrom_TDONE_encrypt_temp">
+        delete from TDONE_encrypt_temp
+    </delete>
+
+    <!--    List<encrypt_field> TDONE_encrypt_field();-->
+    <select id="TDONE_encrypt_field" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT client_id,fund_account_id,trade_account_id from T_DONE where
+        encrypt_lable = 0
+    </select>
+
+    <!--    int insertInto_TDONE_encrypt_temp(@Param("TDONE_B_fundaccountId")String TDONE_B_fundaccountId,
+        @Param("TDONE_A_fundaccountId")String TDONE_A_fundaccountId,
+        @Param("TDONE_B_tradeaccountId")String TDONE_B_tradeaccountId,
+        @Param("TDONE_A_tradeaccountId")String TDONE_A_tradeaccountId,
+        @Param("TDONE_B_clientId")String TDONE_B_clientId,
+        @Param("TDONE_A_clientId")String TDONE_A_clientId);-->
+    <insert id="insertInto_TDONE_encrypt_temp">
+        insert into
+        TDONE_encrypt_temp(TDONE_B_fundaccountId,TDONE_A_fundaccountId,TDONE_B_tradeaccountId,TDONE_A_tradeaccountId,TDONE_B_clientId,TDONE_A_clientId)
+        values(#{TDONE_B_fundaccountId},#{TDONE_A_fundaccountId},#{TDONE_B_tradeaccountId},#{TDONE_A_tradeaccountId},#{TDONE_B_clientId},#{TDONE_A_clientId})
+    </insert>
+
+
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_DONE
+    </select>
+
+    <!--    int Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_DONE where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_DONE A INNER JOIN TDONE_encrypt_temp B ON A.fund_account_id=B.TDONE_B_fundaccountId and
+        A.trade_account_id = B.TDONE_B_tradeaccountId and A.client_id = B.TDONE_B_clientId
+        SET
+        A.fund_account_id=B.TDONE_A_fundaccountId, A.trade_account_id=B.TDONE_A_tradeaccountId,
+        A.client_id=B.TDONE_A_clientId, A.encrypt_lable=1
+        WHERE A.id
+        IN (SELECT id FROM (SELECT id FROM T_DONE where id BETWEEN #{id1} and #{id2}) AS temp)
+    </update>
+
+    <!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_DONE A inner join TDONE_encrypt_temp B ON A.fund_account_id = B.TDONE_B_fundaccountId and
+        A.trade_account_id = B.TDONE_B_tradeaccountId and A.client_id=B.TDONE_B_clientId SET
+        A.fund_account_id=B.TDONE_A_fundaccountId,A.trade_account_id=B.TDONE_A_tradeaccountId,A.client_id=B.TDONE_A_clientId,A.encrypt_lable=1
+        where A.id in (select id from (select id from T_DONE where encrypt_lable=0) AS temp)
+    </update>
+
+</mapper>

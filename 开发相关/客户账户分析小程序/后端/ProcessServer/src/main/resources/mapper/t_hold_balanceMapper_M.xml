@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.processserver.mapper.db1.t_hold_balanceMapper_M">
+    <!--   t_hold_balance getOne(int id);-->
+    <select id="getOne" resultType="org.example.processserver.pojo.t_hold_balance">
+        select * from T_HOLD_BALANCE where id = #{id}
+    </select>
+    <!--    List<t_hold_balance> getAll(@Param("id1")int id1,@Param("id2")int id2);-->
+    <select id="getAll" resultType="org.example.processserver.pojo.t_hold_balance">
+        select * from T_HOLD_BALANCE where id IN (SELECT id FROM (SELECT id FROM T_HOLD_BALANCE where id BETWEEN #{id1}
+        and #{id2}) AS temp)
+    </select>
+    <!--    List<t_hold_balance> getIncrement(@Param("startDate")String startDate,@Param("endDate")String endDate);-->
+    <select id="getIncrement" resultType="org.example.processserver.pojo.t_hold_balance">
+        select * from T_HOLD_BALANCE where busi_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+
+    <!--    int deleteFrom_THB_encrypt_temp();-->
+    <delete id="deleteFrom_THB_encrypt_temp">
+        TRUNCATE THB_encrypt_temp
+    </delete>
+
+
+    <!--    List<encrypt_field> THB_getDistinct();-->
+    <select id="THB_getDistinct" resultType="org.example.processserver.pojo.encrypt_field">
+        select DISTINCT fund_account_id,trade_account_id,client_id from T_HOLD_BALANCE where encrypt_lable = 0
+    </select>
+
+    <!--    int insertInto_THB_encrypt_temp(@Param("THB_B_fundaccountId")String THB_B_fundaccountId,-->
+    <!--    @Param("THB_A_fundaccountId")String THB_A_fundaccountId,-->
+    <!--    @Param("THB_B_tradeaccountId")String THB_B_tradeaccountId,-->
+    <!--    @Param("THB_A_tradeaccountId")String THB_A_tradeaccountId,-->
+    <!--    @Param("THB_B_clientId")String THB_B_clientId,-->
+    <!--    @Param("THB_A_clientId")String THB_A_clientId-->
+    <!--    );-->
+    <insert id="insertInto_THB_encrypt_temp">
+        insert into
+        THB_encrypt_temp(THB_B_fundaccountId,THB_A_fundaccountId,THB_B_tradeaccountId,THB_A_tradeaccountId,THB_B_clientId,THB_A_clientId)
+        values(#{THB_B_fundaccountId},#{THB_A_fundaccountId},#{THB_B_tradeaccountId},#{THB_A_tradeaccountId},#{THB_B_clientId},#{THB_A_clientId})
+    </insert>
+
+
+    <!--    int getCount();-->
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from T_HOLD_BALANCE
+    </select>
+
+    <!--    int Increment_getCount();-->
+    <select id="Increment_getCount" resultType="java.lang.Integer">
+        select count(*) from T_HOLD_BALANCE where busi_date = DATE_FORMAT((CURDATE() - interval 1 day),"%Y%m%d")
+    </select>
+
+
+    <!--    int overWrite(@Param("id1")int id1,@Param("id2")int id2);-->
+    <update id="overWrite">
+        UPDATE T_HOLD_BALANCE A INNER JOIN THB_encrypt_temp B ON A.fund_account_id = B.THB_B_fundaccountId and
+        A.trade_account_id = B.THB_B_tradeaccountId and A.client_id = B.THB_B_clientId SET
+        A.fund_account_id=B.THB_A_fundaccountId,A.trade_account_id=B.THB_A_tradeaccountId,A.client_id=B.THB_A_clientId,encrypt_lable=1
+        WHERE A.encrypt_lable=0 and A.id IN (SELECT id FROM (SELECT id FROM T_HOLD_BALANCE where id BETWEEN #{id1} and
+        #{id2}) AS temp)
+    </update>
+
+
+    <!--    int overWrite_increment();-->
+    <update id="overWrite_increment">
+        UPDATE T_HOLD_BALANCE A inner join THB_encrypt_temp B ON A.fund_account_id = B.THB_B_fundaccountId and
+        A.trade_account_id = B.THB_B_tradeaccountId and A.client_id = B.THB_B_clientId SET
+        A.fund_account_id=B.THB_A_fundaccountId,A.trade_account_id=B.THB_A_tradeaccountId,A.client_id=B.THB_A_clientId,encrypt_lable=1
+        where A.id in (select id from (select id from T_HOLD_BALANCE where encrypt_lable=0) AS temp)
+    </update>
+
+
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.thqh.wechat_miniprogram_management_backend.mapper.StatsMapper">
+    <!-- 累计用户数，实时 -->
+    <select id="countTotalUsers" resultType="long">
+        SELECT COUNT(*)
+        FROM users
+    </select>
+
+    <!-- 累计疑似流失用户数，T-1日截止30天内无访问记录 -->
+    <select id="countSuspectedLostUsers" resultType="long">
+        SELECT COUNT(*)
+        FROM users u
+        WHERE NOT EXISTS (
+        SELECT 1
+        FROM user_access_log l
+        WHERE l.user_id = u.id
+        AND l.access_time &gt;= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        AND l.access_time &lt; (CURDATE())
+        )
+    </select>
+
+    <!-- 上日活跃用户数，T-1日 -->
+    <select id="countYesterdayActiveUsers" resultType="long">
+        SELECT COUNT(DISTINCT user_id)
+        FROM user_access_log
+        WHERE access_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        AND access_time &lt; (CURDATE())
+    </select>
+
+    <select id="countMonthlyNewUsers" resultType="map">
+        SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS count
+        FROM users
+        WHERE YEAR(created_at) = #{year}
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+    </select>
+
+    <select id="countMonthlyActiveUsers" resultType="map">
+        SELECT DATE_FORMAT(access_time, '%Y-%m') AS month, COUNT(DISTINCT user_id) AS count
+        FROM user_access_log
+        WHERE YEAR(access_time) = #{year}
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m')
+    </select>
+
+    <select id="countMonthlyTradeLoginUsers" resultType="map">
+        SELECT DATE_FORMAT(access_time, '%Y-%m') AS month, COUNT(DISTINCT user_id) AS count
+        FROM user_access_log
+        WHERE YEAR(access_time) = #{year}
+          AND function_code = 'LOGIN_TRADEACCOUNT'
+          AND access_status = 1
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m')
+    </select>
+
+    <select id="countMonthlyTradeLoginRate" resultType="map">
+        SELECT month,
+               IFNULL( ROUND( trade_login_users * 100 / authorized_login_users, 2 ), 0 ) AS rate
+        FROM (SELECT DATE_FORMAT(access_time, '%Y-%m')                                              AS month,
+                     SUM(CASE
+                             WHEN function_code = 'LOGIN_TRADEACCOUNT' AND access_status = 1 THEN 1
+                             ELSE 0 END)                                                            AS trade_login_users,
+                     SUM(CASE WHEN function_code = 'LOGIN' AND access_status = 1 THEN 1 ELSE 0 END) AS authorized_login_users
+              FROM user_access_log
+              WHERE YEAR(access_time) = #{year}
+              GROUP BY DATE_FORMAT(access_time, '%Y-%m')) t
+    </select>
+
+    <!-- 功能使用统计 -->
+    <select id="countFunctionUserCount" resultType="map">
+        SELECT function_code, COUNT(DISTINCT user_id) AS count
+        FROM user_access_log
+        WHERE function_code LIKE 'REPORT_%'
+        <if test="isMonth">
+            AND DATE_FORMAT(access_time,'%Y-%m') = #{date}
+        </if>
+        <if test="!isMonth">
+            AND DATE(access_time) = #{date}
+        </if>
+        GROUP BY function_code
+    </select>
+
+    <select id="countFunctionUseCount" resultType="map">
+        SELECT function_code, COUNT(*) AS count
+        FROM user_access_log
+        WHERE function_code LIKE 'REPORT_%'
+        <if test="isMonth">
+            AND DATE_FORMAT(access_time,'%Y-%m') = #{date}
+        </if>
+        <if test="!isMonth">
+            AND DATE(access_time) = #{date}
+        </if>
+        GROUP BY function_code
+    </select>
+
+    <select id="countTradeLoginUsers" resultType="long">
+        SELECT COUNT(DISTINCT user_id)
+        FROM user_access_log
+        WHERE function_code='LOGIN_TRADEACCOUNT'
+        AND access_status=1
+        <if test="isMonth">
+            AND DATE_FORMAT(access_time,'%Y-%m') = #{date}
+        </if>
+        <if test="!isMonth">
+            AND DATE(access_time) = #{date}
+        </if>
+    </select>
+
+</mapper>
